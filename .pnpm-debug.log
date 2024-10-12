@@ -1,0 +1,1177 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "dotnet-grpc-sql-proxy",
+      "version": "0.0.0",
+      "description": "Grpc Proxy for Sql Server",
+      "scripts": {
+        "build": "dotnet build",
+        "start": "dotnet start",
+        "prepare": "husky",
+        "lint:stage:fix": "lint-staged --relative",
+        "lint:fix": "dotnet format",
+        "lint": "dotnet format --verify-no-changes",
+        "restore": "dotnet restore",
+        "test": "dotnet test",
+        "prepare-test-db": "cd devops && sh prepare-db.sh && cd ..",
+        "unload-test-db": "cd devops && docker compose down && cd ..",
+        "test:coverage": "dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info"
+      },
+      "devDependencies": {
+        "husky": "^9.0.11",
+        "lint-staged": "^15.2.5"
+      },
+      "lint-staged": {
+        "*.cs": "dotnet format --include"
+      },
+      "keywords": [],
+      "author": "",
+      "license": "ISC"
+    },
+    "prefix": "/home/thiago/projects/personal/codibre/grpc-sql-proxy"
+  },
+  "2 debug pnpm:context": {
+    "currentLockfileExists": false,
+    "storeDir": "/home/thiago/.pnpm-store/v3",
+    "virtualStoreDir": "/home/thiago/projects/personal/codibre/grpc-sql-proxy/node_modules/.pnpm"
+  },
+  "3 debug pnpm:stage": {
+    "prefix": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "stage": "resolution_started"
+  },
+  "4 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/husky/9.1.6",
+    "wanted": {
+      "dependentId": ".",
+      "name": "husky",
+      "rawSpec": "^9.0.11"
+    }
+  },
+  "5 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/husky/9.1.6",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "6 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/lint-staged/15.2.10",
+    "wanted": {
+      "dependentId": ".",
+      "name": "lint-staged",
+      "rawSpec": "^15.2.5"
+    }
+  },
+  "7 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/lint-staged/15.2.10",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "8 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/husky/9.1.6",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "9 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/lint-staged/15.2.10",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "10 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/commander/12.1.0",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "commander",
+      "rawSpec": "~12.1.0"
+    }
+  },
+  "11 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/commander/12.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "12 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/commander/12.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "13 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/chalk/5.3.0",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "chalk",
+      "rawSpec": "~5.3.0"
+    }
+  },
+  "14 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/chalk/5.3.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "15 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/chalk/5.3.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "16 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/lilconfig/3.1.2",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "lilconfig",
+      "rawSpec": "~3.1.2"
+    }
+  },
+  "17 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/lilconfig/3.1.2",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "18 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/pidtree/0.6.0",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "pidtree",
+      "rawSpec": "~0.6.0"
+    }
+  },
+  "19 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pidtree/0.6.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "20 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/debug/4.3.7",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "debug",
+      "rawSpec": "~4.3.6"
+    }
+  },
+  "21 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/debug/4.3.7",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "22 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/execa/8.0.1",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "execa",
+      "rawSpec": "~8.0.1"
+    }
+  },
+  "23 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/execa/8.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "24 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/micromatch/4.0.8",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "micromatch",
+      "rawSpec": "~4.0.8"
+    }
+  },
+  "25 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/micromatch/4.0.8",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "26 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/string-argv/0.3.2",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "string-argv",
+      "rawSpec": "~0.3.2"
+    }
+  },
+  "27 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/string-argv/0.3.2",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "28 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/lilconfig/3.1.2",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "29 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/listr2/8.2.5",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "listr2",
+      "rawSpec": "~8.2.4"
+    }
+  },
+  "30 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/listr2/8.2.5",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "31 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pidtree/0.6.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "32 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/debug/4.3.7",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "33 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/execa/8.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "34 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/micromatch/4.0.8",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "35 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/string-argv/0.3.2",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "36 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/listr2/8.2.5",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "37 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/yaml/2.5.1",
+    "wanted": {
+      "dependentId": "/lint-staged/15.2.10",
+      "name": "yaml",
+      "rawSpec": "~2.5.0"
+    }
+  },
+  "38 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/yaml/2.5.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "39 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/strip-final-newline/3.0.0",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "strip-final-newline",
+      "rawSpec": "^3.0.0"
+    }
+  },
+  "40 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/strip-final-newline/3.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "41 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/npm-run-path/5.3.0",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "npm-run-path",
+      "rawSpec": "^5.1.0"
+    }
+  },
+  "42 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/npm-run-path/5.3.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "43 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/is-stream/3.0.0",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "is-stream",
+      "rawSpec": "^3.0.0"
+    }
+  },
+  "44 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-stream/3.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "45 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/signal-exit/4.1.0",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "signal-exit",
+      "rawSpec": "^4.1.0"
+    }
+  },
+  "46 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/signal-exit/4.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "47 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/get-stream/8.0.1",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "get-stream",
+      "rawSpec": "^8.0.1"
+    }
+  },
+  "48 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/get-stream/8.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "49 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/yaml/2.5.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "50 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/merge-stream/2.0.0",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "merge-stream",
+      "rawSpec": "^2.0.0"
+    }
+  },
+  "51 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/merge-stream/2.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "52 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/strip-final-newline/3.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "53 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/npm-run-path/5.3.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "54 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-stream/3.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "55 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ms/2.1.3",
+    "wanted": {
+      "dependentId": "/debug/4.3.7",
+      "name": "ms",
+      "rawSpec": "^2.1.3"
+    }
+  },
+  "56 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ms/2.1.3",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "57 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/signal-exit/4.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "58 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/cross-spawn/7.0.3",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "cross-spawn",
+      "rawSpec": "^7.0.3"
+    }
+  },
+  "59 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/cross-spawn/7.0.3",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "60 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/get-stream/8.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "61 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/merge-stream/2.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "62 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ms/2.1.3",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "63 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/cross-spawn/7.0.3",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "64 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/braces/3.0.3",
+    "wanted": {
+      "dependentId": "/micromatch/4.0.8",
+      "name": "braces",
+      "rawSpec": "^3.0.3"
+    }
+  },
+  "65 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/braces/3.0.3",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "66 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/onetime/6.0.0",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "onetime",
+      "rawSpec": "^6.0.0"
+    }
+  },
+  "67 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/onetime/6.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "68 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/rfdc/1.4.1",
+    "wanted": {
+      "dependentId": "/listr2/8.2.5",
+      "name": "rfdc",
+      "rawSpec": "^1.4.1"
+    }
+  },
+  "69 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/rfdc/1.4.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "70 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/braces/3.0.3",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "71 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/wrap-ansi/9.0.0",
+    "wanted": {
+      "dependentId": "/listr2/8.2.5",
+      "name": "wrap-ansi",
+      "rawSpec": "^9.0.0"
+    }
+  },
+  "72 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/wrap-ansi/9.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "73 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/onetime/6.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "74 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/wrap-ansi/9.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "75 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/rfdc/1.4.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "76 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/cli-truncate/4.0.0",
+    "wanted": {
+      "dependentId": "/listr2/8.2.5",
+      "name": "cli-truncate",
+      "rawSpec": "^4.0.0"
+    }
+  },
+  "77 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/cli-truncate/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "78 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/cli-truncate/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "79 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eventemitter3/5.0.1",
+    "wanted": {
+      "dependentId": "/listr2/8.2.5",
+      "name": "eventemitter3",
+      "rawSpec": "^5.0.1"
+    }
+  },
+  "80 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/eventemitter3/5.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "81 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/colorette/2.0.20",
+    "wanted": {
+      "dependentId": "/listr2/8.2.5",
+      "name": "colorette",
+      "rawSpec": "^2.0.20"
+    }
+  },
+  "82 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/colorette/2.0.20",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "83 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/picomatch/2.3.1",
+    "wanted": {
+      "dependentId": "/micromatch/4.0.8",
+      "name": "picomatch",
+      "rawSpec": "^2.3.1"
+    }
+  },
+  "84 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/picomatch/2.3.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "85 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/log-update/6.1.0",
+    "wanted": {
+      "dependentId": "/listr2/8.2.5",
+      "name": "log-update",
+      "rawSpec": "^6.1.0"
+    }
+  },
+  "86 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/log-update/6.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "87 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/wrap-ansi/9.0.0",
+    "wanted": {
+      "dependentId": "/log-update/6.1.0",
+      "name": "wrap-ansi",
+      "rawSpec": "^9.0.0"
+    }
+  },
+  "88 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/colorette/2.0.20",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "89 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/eventemitter3/5.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "90 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/log-update/6.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "91 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/picomatch/2.3.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "92 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/slice-ansi/5.0.0",
+    "wanted": {
+      "dependentId": "/cli-truncate/4.0.0",
+      "name": "slice-ansi",
+      "rawSpec": "^5.0.0"
+    }
+  },
+  "93 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/slice-ansi/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "94 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/slice-ansi/7.1.0",
+    "wanted": {
+      "dependentId": "/log-update/6.1.0",
+      "name": "slice-ansi",
+      "rawSpec": "^7.1.0"
+    }
+  },
+  "95 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/slice-ansi/7.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "96 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/cli-cursor/5.0.0",
+    "wanted": {
+      "dependentId": "/log-update/6.1.0",
+      "name": "cli-cursor",
+      "rawSpec": "^5.0.0"
+    }
+  },
+  "97 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/cli-cursor/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "98 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ansi-styles/6.2.1",
+    "wanted": {
+      "dependentId": "/wrap-ansi/9.0.0",
+      "name": "ansi-styles",
+      "rawSpec": "^6.2.1"
+    }
+  },
+  "99 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ansi-styles/6.2.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "100 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/strip-ansi/7.1.0",
+    "wanted": {
+      "dependentId": "/wrap-ansi/9.0.0",
+      "name": "strip-ansi",
+      "rawSpec": "^7.1.0"
+    }
+  },
+  "101 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/strip-ansi/7.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "102 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/strip-ansi/7.1.0",
+    "wanted": {
+      "dependentId": "/log-update/6.1.0",
+      "name": "strip-ansi",
+      "rawSpec": "^7.1.0"
+    }
+  },
+  "103 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ansi-escapes/7.0.0",
+    "wanted": {
+      "dependentId": "/log-update/6.1.0",
+      "name": "ansi-escapes",
+      "rawSpec": "^7.0.0"
+    }
+  },
+  "104 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ansi-escapes/7.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "105 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ansi-styles/6.2.1",
+    "wanted": {
+      "dependentId": "/slice-ansi/7.1.0",
+      "name": "ansi-styles",
+      "rawSpec": "^6.2.1"
+    }
+  },
+  "106 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/string-width/7.2.0",
+    "wanted": {
+      "dependentId": "/wrap-ansi/9.0.0",
+      "name": "string-width",
+      "rawSpec": "^7.0.0"
+    }
+  },
+  "107 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/string-width/7.2.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "108 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/string-width/7.2.0",
+    "wanted": {
+      "dependentId": "/cli-truncate/4.0.0",
+      "name": "string-width",
+      "rawSpec": "^7.0.0"
+    }
+  },
+  "109 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/strip-ansi/7.1.0",
+    "wanted": {
+      "dependentId": "/string-width/7.2.0",
+      "name": "strip-ansi",
+      "rawSpec": "^7.1.0"
+    }
+  },
+  "110 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ansi-styles/6.2.1",
+    "wanted": {
+      "dependentId": "/slice-ansi/5.0.0",
+      "name": "ansi-styles",
+      "rawSpec": "^6.0.0"
+    }
+  },
+  "111 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/fill-range/7.1.1",
+    "wanted": {
+      "dependentId": "/braces/3.0.3",
+      "name": "fill-range",
+      "rawSpec": "^7.1.1"
+    }
+  },
+  "112 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/fill-range/7.1.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "113 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/slice-ansi/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "114 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/slice-ansi/7.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "115 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/strip-ansi/7.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "116 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ansi-styles/6.2.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "117 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/cli-cursor/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "118 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/string-width/7.2.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "119 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/fill-range/7.1.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "120 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ansi-escapes/7.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "121 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/environment/1.1.0",
+    "wanted": {
+      "dependentId": "/ansi-escapes/7.0.0",
+      "name": "environment",
+      "rawSpec": "^1.0.0"
+    }
+  },
+  "122 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/environment/1.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "123 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/restore-cursor/5.1.0",
+    "wanted": {
+      "dependentId": "/cli-cursor/5.0.0",
+      "name": "restore-cursor",
+      "rawSpec": "^5.0.0"
+    }
+  },
+  "124 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/restore-cursor/5.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "125 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/onetime/7.0.0",
+    "wanted": {
+      "dependentId": "/restore-cursor/5.1.0",
+      "name": "onetime",
+      "rawSpec": "^7.0.0"
+    }
+  },
+  "126 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/onetime/7.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "127 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/signal-exit/4.1.0",
+    "wanted": {
+      "dependentId": "/restore-cursor/5.1.0",
+      "name": "signal-exit",
+      "rawSpec": "^4.1.0"
+    }
+  },
+  "128 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ansi-regex/6.1.0",
+    "wanted": {
+      "dependentId": "/strip-ansi/7.1.0",
+      "name": "ansi-regex",
+      "rawSpec": "^6.0.1"
+    }
+  },
+  "129 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ansi-regex/6.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "130 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/get-east-asian-width/1.2.0",
+    "wanted": {
+      "dependentId": "/string-width/7.2.0",
+      "name": "get-east-asian-width",
+      "rawSpec": "^1.0.0"
+    }
+  },
+  "131 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/get-east-asian-width/1.2.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "132 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/emoji-regex/10.4.0",
+    "wanted": {
+      "dependentId": "/string-width/7.2.0",
+      "name": "emoji-regex",
+      "rawSpec": "^10.3.0"
+    }
+  },
+  "133 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/emoji-regex/10.4.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "134 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/is-fullwidth-code-point/5.0.0",
+    "wanted": {
+      "dependentId": "/slice-ansi/7.1.0",
+      "name": "is-fullwidth-code-point",
+      "rawSpec": "^5.0.0"
+    }
+  },
+  "135 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-fullwidth-code-point/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "136 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/is-fullwidth-code-point/4.0.0",
+    "wanted": {
+      "dependentId": "/slice-ansi/5.0.0",
+      "name": "is-fullwidth-code-point",
+      "rawSpec": "^4.0.0"
+    }
+  },
+  "137 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-fullwidth-code-point/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "138 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/get-east-asian-width/1.2.0",
+    "wanted": {
+      "dependentId": "/is-fullwidth-code-point/5.0.0",
+      "name": "get-east-asian-width",
+      "rawSpec": "^1.0.0"
+    }
+  },
+  "139 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/environment/1.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "140 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/onetime/7.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "141 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/restore-cursor/5.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "142 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/to-regex-range/5.0.1",
+    "wanted": {
+      "dependentId": "/fill-range/7.1.1",
+      "name": "to-regex-range",
+      "rawSpec": "^5.0.1"
+    }
+  },
+  "143 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/to-regex-range/5.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "144 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ansi-regex/6.1.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "145 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/get-east-asian-width/1.2.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "146 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-fullwidth-code-point/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "147 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/to-regex-range/5.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "148 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-fullwidth-code-point/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "149 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/emoji-regex/10.4.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "150 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/mimic-function/5.0.1",
+    "wanted": {
+      "dependentId": "/onetime/7.0.0",
+      "name": "mimic-function",
+      "rawSpec": "^5.0.0"
+    }
+  },
+  "151 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/mimic-function/5.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "152 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/is-number/7.0.0",
+    "wanted": {
+      "dependentId": "/to-regex-range/5.0.1",
+      "name": "is-number",
+      "rawSpec": "^7.0.0"
+    }
+  },
+  "153 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-number/7.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "154 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/mimic-function/5.0.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "155 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/is-number/7.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "156 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/human-signals/5.0.0",
+    "wanted": {
+      "dependentId": "/execa/8.0.1",
+      "name": "human-signals",
+      "rawSpec": "^5.0.0"
+    }
+  },
+  "157 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/human-signals/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "158 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/human-signals/5.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "159 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/which/2.0.2",
+    "wanted": {
+      "dependentId": "/cross-spawn/7.0.3",
+      "name": "which",
+      "rawSpec": "^2.0.1"
+    }
+  },
+  "160 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/which/2.0.2",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "161 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/shebang-command/2.0.0",
+    "wanted": {
+      "dependentId": "/cross-spawn/7.0.3",
+      "name": "shebang-command",
+      "rawSpec": "^2.0.0"
+    }
+  },
+  "162 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/shebang-command/2.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "163 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/shebang-command/2.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "164 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/which/2.0.2",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "165 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/path-key/4.0.0",
+    "wanted": {
+      "dependentId": "/npm-run-path/5.3.0",
+      "name": "path-key",
+      "rawSpec": "^4.0.0"
+    }
+  },
+  "166 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/path-key/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "167 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/path-key/3.1.1",
+    "wanted": {
+      "dependentId": "/cross-spawn/7.0.3",
+      "name": "path-key",
+      "rawSpec": "^3.1.0"
+    }
+  },
+  "168 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/path-key/3.1.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "169 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/path-key/3.1.1",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "170 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/path-key/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "171 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/mimic-fn/4.0.0",
+    "wanted": {
+      "dependentId": "/onetime/6.0.0",
+      "name": "mimic-fn",
+      "rawSpec": "^4.0.0"
+    }
+  },
+  "172 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/mimic-fn/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "173 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/mimic-fn/4.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "174 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/shebang-regex/3.0.0",
+    "wanted": {
+      "dependentId": "/shebang-command/2.0.0",
+      "name": "shebang-regex",
+      "rawSpec": "^3.0.0"
+    }
+  },
+  "175 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/shebang-regex/3.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "176 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/isexe/2.0.0",
+    "wanted": {
+      "dependentId": "/which/2.0.2",
+      "name": "isexe",
+      "rawSpec": "^2.0.0"
+    }
+  },
+  "177 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/isexe/2.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "resolved"
+  },
+  "178 debug pnpm:package-manifest": {
+    "prefix": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "updated": {
+      "name": "dotnet-grpc-sql-proxy",
+      "version": "0.0.0",
+      "description": "Grpc Proxy for Sql Server",
+      "scripts": {
+        "build": "dotnet build",
+        "start": "dotnet start",
+        "prepare": "husky",
+        "lint:stage:fix": "lint-staged --relative",
+        "lint:fix": "dotnet format",
+        "lint": "dotnet format --verify-no-changes",
+        "restore": "dotnet restore",
+        "test": "dotnet test",
+        "prepare-test-db": "cd devops && sh prepare-db.sh && cd ..",
+        "unload-test-db": "cd devops && docker compose down && cd ..",
+        "test:coverage": "dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info"
+      },
+      "devDependencies": {
+        "husky": "^9.0.11",
+        "lint-staged": "^15.2.5"
+      },
+      "lint-staged": {
+        "*.cs": "dotnet format --include"
+      },
+      "keywords": [],
+      "author": "",
+      "license": "ISC"
+    }
+  },
+  "179 debug pnpm:stage": {
+    "prefix": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "stage": "resolution_done"
+  },
+  "180 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/shebang-regex/3.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "181 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/isexe/2.0.0",
+    "requester": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "status": "found_in_store"
+  },
+  "182 debug pnpm:stage": {
+    "prefix": "/home/thiago/projects/personal/codibre/grpc-sql-proxy",
+    "stage": "importing_done"
+  },
+  "183 debug pnpm:summary": {
+    "prefix": "/home/thiago/projects/personal/codibre/grpc-sql-proxy"
+  },
+  "184 error pnpm": {
+    "message": {
+      "code": "ELIFECYCLE",
+      "errno": "ENOENT",
+      "syscall": "spawn",
+      "file": "sh",
+      "pkgid": "dotnet-grpc-sql-proxy@0.0.0",
+      "stage": "prepare",
+      "script": "husky",
+      "pkgname": "dotnet-grpc-sql-proxy"
+    },
+    "err": {
+      "name": "Error",
+      "message": "dotnet-grpc-sql-proxy@0.0.0 prepare: `husky`\nspawn ENOENT",
+      "code": "ELIFECYCLE",
+      "stack": "Error: dotnet-grpc-sql-proxy@0.0.0 prepare: `husky`\nspawn ENOENT\n    at ChildProcess.<anonymous> (/home/thiago/.nvm/versions/node/v20.17.0/lib/node_modules/pnpm/dist/pnpm.js:87651:20)\n    at ChildProcess.emit (node:events:519:28)\n    at maybeClose (node:internal/child_process:1105:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)"
+    }
+  }
+}

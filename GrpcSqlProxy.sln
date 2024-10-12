@@ -1,0 +1,54 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{31E9478F-4116-4A81-90D8-D10220F77760}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codibre.GrpcSqlProxy.Api", "src\Codibre.GrpcSqlProxy.Api\Codibre.GrpcSqlProxy.Api.csproj", "{7400EE32-B02E-4273-BCB9-4A0CF6D7FFD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codibre.GrpcSqlProxy.Client", "src\Codibre.GrpcSqlProxy.Client\Codibre.GrpcSqlProxy.Client.csproj", "{3E171806-F581-492B-BAA5-75928450B7C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BA05F256-FE75-41DB-A5FE-736CB51943A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codibre.GrpcSqlProxy.Test", "test\Codibre.GrpcSqlProxy.Test\Codibre.GrpcSqlProxy.Test.csproj", "{C4BF36EC-CEB8-4B49-8A69-A535BADAD020}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codibre.GrpcSqlProxy.Common", "src\Codibre.GrpcSqlProxy.Common\Codibre.GrpcSqlProxy.Common.csproj", "{B77830F4-D2B2-456D-BF41-3A4B06BC7A15}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB94761D-0269-4351-9F34-065C8A3E9CCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB94761D-0269-4351-9F34-065C8A3E9CCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB94761D-0269-4351-9F34-065C8A3E9CCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB94761D-0269-4351-9F34-065C8A3E9CCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7400EE32-B02E-4273-BCB9-4A0CF6D7FFD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7400EE32-B02E-4273-BCB9-4A0CF6D7FFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7400EE32-B02E-4273-BCB9-4A0CF6D7FFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7400EE32-B02E-4273-BCB9-4A0CF6D7FFD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E171806-F581-492B-BAA5-75928450B7C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E171806-F581-492B-BAA5-75928450B7C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E171806-F581-492B-BAA5-75928450B7C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E171806-F581-492B-BAA5-75928450B7C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4BF36EC-CEB8-4B49-8A69-A535BADAD020}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4BF36EC-CEB8-4B49-8A69-A535BADAD020}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4BF36EC-CEB8-4B49-8A69-A535BADAD020}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4BF36EC-CEB8-4B49-8A69-A535BADAD020}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B77830F4-D2B2-456D-BF41-3A4B06BC7A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B77830F4-D2B2-456D-BF41-3A4B06BC7A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B77830F4-D2B2-456D-BF41-3A4B06BC7A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B77830F4-D2B2-456D-BF41-3A4B06BC7A15}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7400EE32-B02E-4273-BCB9-4A0CF6D7FFD0} = {31E9478F-4116-4A81-90D8-D10220F77760}
+		{3E171806-F581-492B-BAA5-75928450B7C6} = {31E9478F-4116-4A81-90D8-D10220F77760}
+		{C4BF36EC-CEB8-4B49-8A69-A535BADAD020} = {BA05F256-FE75-41DB-A5FE-736CB51943A0}
+		{B77830F4-D2B2-456D-BF41-3A4B06BC7A15} = {31E9478F-4116-4A81-90D8-D10220F77760}
+	EndGlobalSection
+EndGlobal

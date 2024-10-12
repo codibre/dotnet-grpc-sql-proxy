@@ -1,0 +1,28 @@
+{
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/changelog",
+    "@semantic-release/release-notes-generator",
+    "@droidsolutions-oss/semantic-release-nuget",
+    "@semantic-release/github",
+    "@semantic-release/git"
+  ],
+  "preset": "angular",
+  "npmPublish": false,
+  "projectPath": "src/Codibre.GrpcSqlProxy.Client/Codibre.GrpcSqlProxy.Client.csproj",
+  "usePackageVersion": true,
+  "files": [
+    {
+      "type": "xml",
+      "replacements": [
+        {
+          "key": "VersionPrefix",
+          "value": "${nextRelease.version}"
+        }
+      ]
+    }
+  ]
+}

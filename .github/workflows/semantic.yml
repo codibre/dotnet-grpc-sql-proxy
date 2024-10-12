@@ -1,0 +1,56 @@
+name: semantic-release
+
+on:
+  push:
+    branches: [main]
+
+env:
+  ConnectionStrings__SqlConnection: ${{ secrets.CONNECTIONSTRINGS__SQLCONNECTION }}
+
+jobs:
+  semantic:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      NUGET_TOKEN: ${{secrets.NUGET_TOKEN}}
+      HUSKY: 0
+      CI: true
+    steps:
+      - uses: actions/checkout@v2
+      # Install the .NET SDK indicated in the global.json file
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+
+      - name: Prepare Db
+        run: npm run prepare-test-db
+
+      - name: Test
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info
+          coverageLocations: ${{github.workspace}}/test/Codibre.MSSqlSession.Test/coverage/lcov.info:lcov
+      
+      - name: Prepare Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+
+      - name: Semantic Release
+        run: npm i -g @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/git @semantic-release/github @semantic-release/exec @droidsolutions-oss/semantic-release-nuget @semantic-release/release-notes-generator semantic-release @semantic-release/error
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NUGET_TOKEN: ${{secrets.NUGET_TOKEN}}
+          HUSKY: 0
+          CI: true
+      - run: npx semantic-release --ci
+      - run: git push
+
+      - name: Unload Db
+        run: npm run unload-test-db

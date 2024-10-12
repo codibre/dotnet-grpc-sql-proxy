@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
+    <Version>0.0.0</Version>
+    <LangVersion>12.0</LangVersion>
+    <IsPackable>true</IsPackable>
+    <PackageTags>Sql Server;MSSQL;Grpc;Proxy;Latency;Avro.Performance</PackageTags>
+    <IsPackable>true</IsPackable>
+    <RepositoryUrl>https://github.com/codibre/dotnet-grpc-sql-proxy.git</RepositoryUrl> 
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <Protobuf Include="..\Protos\sql-proxy.proto" GrpcServices="Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.53.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.54.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Codibre.GrpcSqlProxy.Common\Codibre.GrpcSqlProxy.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+</Project>

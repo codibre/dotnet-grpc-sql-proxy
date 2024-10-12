@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "Codibre.GrpcSqlProxy.Api";
+
+package SqlProxy;
+
+service SqlProxy {
+  rpc Run (stream SqlRequest) returns (stream SqlResponse);
+}
+
+message SqlRequest {
+  string id = 1;
+  optional string schema = 2;
+  string connString = 3;
+  string query = 4;
+  int32 packetSize = 5;
+  bool compress = 6;
+}
+
+message SqlResponse {
+  string id = 1;
+  optional bytes result = 2;
+  optional string error = 3;
+  bool last = 4;
+}

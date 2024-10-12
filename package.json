@@ -1,0 +1,28 @@
+{
+  "name": "dotnet-grpc-sql-proxy",
+  "version": "0.0.0",
+  "description": "Grpc Proxy for Sql Server",
+  "scripts": {
+    "build": "dotnet build",
+    "start": "dotnet start",
+    "prepare": "husky",
+    "lint:stage:fix": "lint-staged --relative",
+    "lint:fix": "dotnet format",
+    "lint": "dotnet format --verify-no-changes",
+    "restore": "dotnet restore",
+    "test": "dotnet test",
+    "prepare-test-db": "cd devops && sh prepare-db.sh && cd ..",
+    "unload-test-db": "cd devops && docker compose down && cd ..",
+    "test:coverage": "dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.5"
+  },
+  "lint-staged": {
+    "*.cs": "dotnet format --include"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

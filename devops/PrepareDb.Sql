@@ -1,0 +1,17 @@
+CREATE TABLE [dbo].[TB_PRODUTO] (
+    [CD_PRODUTO]                         INT             NOT NULL,
+    CONSTRAINT [PK_TB_PRODUTO] PRIMARY KEY CLUSTERED ([CD_PRODUTO] ASC)
+);
+GO
+
+CREATE TABLE [dbo].[TB_PESSOA] (
+    [CD_PESSOA]                          INT             NOT NULL,
+    CONSTRAINT [PK_TB_PESSOA] PRIMARY KEY CLUSTERED ([CD_PESSOA] ASC)
+);
+GO
+
+CREATE TABLE [dbo].[TB_PEDIDO] (
+    [CD_PEDIDO]                          INT             NOT NULL,
+    CONSTRAINT [PK_TB_PEDIDO] PRIMARY KEY CLUSTERED ([CD_PEDIDO] ASC)
+);
+GO

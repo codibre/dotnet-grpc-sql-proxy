@@ -1,0 +1,38 @@
+# This is a basic workflow to help you get started with Actions
+
+name: test
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  ConnectionStrings__SqlConnection: ${{ secrets.CONNECTIONSTRINGS__SQLCONNECTION }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+      # Install the .NET SDK indicated in the global.json file
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare Db
+        run: npm run prepare-test-db
+
+      - name: Test
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info
+          coverageLocations: ${{github.workspace}}/test/Codibre.MSSqlSession.Test/coverage/lcov.info:lcov
+
+      - name: Unload Db
+        run: npm run unload-test-db
