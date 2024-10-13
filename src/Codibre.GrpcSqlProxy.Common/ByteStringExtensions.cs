@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using Google.Protobuf;
 
 namespace Codibre.GrpcSqlProxy.Common;

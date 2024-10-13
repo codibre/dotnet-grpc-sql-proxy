@@ -1,4 +1,4 @@
-namespace Codibre.GrpcSqlProxy.Common;
+﻿namespace Codibre.GrpcSqlProxy.Common;
 
 public static class DictionaryExtensions
 {

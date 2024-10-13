@@ -1,12 +1,11 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Threading.Channels;
-using Avro;
 using Avro.Generic;
 using Avro.IO;
-using Grpc.Core;
 using Codibre.GrpcSqlProxy.Api;
 using Codibre.GrpcSqlProxy.Client.Impl.Utils;
 using Codibre.GrpcSqlProxy.Common;
+using Grpc.Core;
 
 namespace Codibre.GrpcSqlProxy.Client.Impl;
 
@@ -48,14 +47,15 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
             _cancellationTokenSource.Cancel();
             _running = false;
             _responseHooks.Clear();
-            try {
+            try
+            {
                 await _stream.RequestStream.CompleteAsync();
                 _stream.Dispose();
-            } 
+            }
             catch (Exception)
             {
                 // Ignoring errors due to already closed stream
-            }   
+            }
         }
     }
 
@@ -64,7 +64,7 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
     {
         if (!_running) throw new InvalidOperationException("Tunnel closed");
         var type = typeof(T);
-        (RecordSchema, string) schema = type.GetCachedSchema();
+        var schema = type.GetCachedSchema();
 
         var results = InternalRun(sql, schema.Item2);
         await foreach (var result in results)
@@ -86,7 +86,8 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
         }
     }
 
-    public async ValueTask Execute(string sql) {
+    public async ValueTask Execute(string sql)
+    {
         await InternalRun(sql, null).LastAsync();
     }
 
@@ -109,7 +110,8 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
         while (await reader.WaitToReadAsync(_cancellationTokenSource.Token))
         {
             reader.TryRead(out var item);
-            if (item is not null) {
+            if (item is not null)
+            {
                 if (!string.IsNullOrEmpty(item.Error)) throw new SqlProxyException(item.Error);
                 yield return item;
             }

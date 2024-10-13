@@ -1,7 +1,7 @@
-using Avro.Generic;
+﻿using Avro.Generic;
+using Codibre.GrpcSqlProxy.Common;
 using Dapper;
 using Google.Protobuf;
-using Codibre.GrpcSqlProxy.Common;
 using Microsoft.Data.SqlClient;
 
 namespace Codibre.GrpcSqlProxy.Api.Utils;
@@ -25,7 +25,8 @@ public static class IAsyncEnumerableExtensions
             if (queue.Count > 1) yield return (queue.Pop(), false);
         }
         if (queue.Empty) yield return _empty;
-        else {
+        else
+        {
             queue.EnqueueRest();
             while (queue.Count > 1) yield return (queue.Pop(), false);
             if (queue.Count > 0) yield return (queue.Pop(), true);

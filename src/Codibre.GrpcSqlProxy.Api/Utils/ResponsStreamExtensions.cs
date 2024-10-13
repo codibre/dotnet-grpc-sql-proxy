@@ -1,6 +1,6 @@
+﻿using Codibre.GrpcSqlProxy.Common;
 using Google.Protobuf;
 using Grpc.Core;
-using Codibre.GrpcSqlProxy.Common;
 using Microsoft.Data.SqlClient;
 
 namespace Codibre.GrpcSqlProxy.Api.Utils;
@@ -25,13 +25,15 @@ public static class ResponseStreamExtensions
         {
             if (context.Connection is null) responseStream.WriteError(request.Id, "Connection not established yet");
         }
-        else {
+        else
+        {
             if (context.Connection is null)
             {
                 context.ConnectionString = connString;
                 context.Connection = await OpenConnection(connString);
             }
-            if (context.ConnectionString is not null && context.ConnectionString != connString) {
+            if (context.ConnectionString is not null && context.ConnectionString != connString)
+            {
                 responseStream.WriteError(request.Id, "ConnectionString differs from first one");
                 return null;
             }

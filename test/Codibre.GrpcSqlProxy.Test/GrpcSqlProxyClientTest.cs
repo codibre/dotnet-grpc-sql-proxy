@@ -1,4 +1,4 @@
-using Codibre.GrpcSqlProxy.Api;
+﻿using Codibre.GrpcSqlProxy.Api;
 using Codibre.GrpcSqlProxy.Client;
 using Codibre.GrpcSqlProxy.Client.Impl;
 using Microsoft.AspNetCore.Builder;
@@ -6,15 +6,18 @@ using Microsoft.Extensions.Configuration;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
-public class TB_PRODUTO {
-    public int CD_PRODUTO { get; set;}
+public class TB_PRODUTO
+{
+    public int CD_PRODUTO { get; set; }
 }
-public class TB_PEDIDO {
-    public int CD_PEDIDO { get; set;}
+public class TB_PEDIDO
+{
+    public int CD_PEDIDO { get; set; }
 }
 
-public class TB_PESSOA {
-    public int CD_PESSOA { get; set;}
+public class TB_PESSOA
+{
+    public int CD_PESSOA { get; set; }
 }
 
 public class GrpcSqlProxyClientTest : IDisposable
@@ -50,8 +53,9 @@ public class GrpcSqlProxyClientTest : IDisposable
             new SqlProxyClientOptions(
                 _url,
                 _config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            ) {
-                 Compress = false
+            )
+            {
+                Compress = false
             }
         );
 
@@ -67,7 +71,7 @@ public class GrpcSqlProxyClientTest : IDisposable
         // Assert
         result1.Should().BeOfType<TB_PEDIDO>();
         result2.Should().BeOfType<TB_PEDIDO[]>();
-        result1.Should().BeEquivalentTo(new TB_PEDIDO{ CD_PEDIDO = 1 });
+        result1.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 1 });
         result2.Should().BeEquivalentTo(Array.Empty<TB_PEDIDO>());
     }
 
@@ -80,8 +84,9 @@ public class GrpcSqlProxyClientTest : IDisposable
             new SqlProxyClientOptions(
                 _url,
                 _config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            ) {
-                 Compress = true
+            )
+            {
+                Compress = true
             }
         );
 
@@ -97,7 +102,7 @@ public class GrpcSqlProxyClientTest : IDisposable
         // Assert
         result1.Should().BeOfType<TB_PRODUTO>();
         result2.Should().BeOfType<TB_PRODUTO[]>();
-        result1.Should().BeEquivalentTo(new TB_PRODUTO{ CD_PRODUTO = 1 });
+        result1.Should().BeEquivalentTo(new TB_PRODUTO { CD_PRODUTO = 1 });
         result2.Should().BeEquivalentTo(Array.Empty<TB_PRODUTO>());
     }
 
@@ -110,14 +115,16 @@ public class GrpcSqlProxyClientTest : IDisposable
             new SqlProxyClientOptions(
                 _url,
                 _config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            ) {
-                 Compress = false
+            )
+            {
+                Compress = false
             }
         );
         Exception? thrownException = null;
 
         // Act
-        try {
+        try
+        {
             using var channel = client.CreateChannel();
             await channel.Execute("SELECT * FROM INVALID_TABLE");
         }
@@ -139,8 +146,9 @@ public class GrpcSqlProxyClientTest : IDisposable
             new SqlProxyClientOptions(
                 _url,
                 _config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            ) {
-                 Compress = false
+            )
+            {
+                Compress = false
             }
         );
 
@@ -164,7 +172,7 @@ public class GrpcSqlProxyClientTest : IDisposable
         result1.Should().BeOfType<TB_PESSOA>();
         result2.Should().BeOfType<TB_PESSOA[]>();
         result3.Should().BeOfType<TB_PESSOA[]>();
-        result1.Should().BeEquivalentTo(new TB_PESSOA{ CD_PESSOA = 3 });
+        result1.Should().BeEquivalentTo(new TB_PESSOA { CD_PESSOA = 3 });
         result2.OrderBy(x => x.CD_PESSOA).ToArray().Should().BeEquivalentTo(new TB_PESSOA[] {
             new () { CD_PESSOA = 1 },
             new () { CD_PESSOA = 5 }

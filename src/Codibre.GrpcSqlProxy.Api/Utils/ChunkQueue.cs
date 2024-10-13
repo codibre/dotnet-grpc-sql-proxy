@@ -1,9 +1,9 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using Avro;
 using Avro.Generic;
 using Avro.IO;
-using Google.Protobuf;
 using Codibre.GrpcSqlProxy.Common;
+using Google.Protobuf;
 
 namespace Codibre.GrpcSqlProxy.Api.Utils;
 
@@ -12,10 +12,10 @@ public sealed class ChunkQueue : Queue<MemoryStream>
     private MemoryStream _stream;
     private Stream _writeStream;
     private BinaryEncoder _writer;
-    private bool _compress;
-    private GenericDatumWriter<GenericRecord> _datumWriter;
+    private readonly bool _compress;
+    private readonly GenericDatumWriter<GenericRecord> _datumWriter;
     private int _chunkSize = 0;
-    private int _packetSize;
+    private readonly int _packetSize;
 
     public ChunkQueue(bool compress, RecordSchema schemaResult, int packetSize)
     {
@@ -27,7 +27,7 @@ public sealed class ChunkQueue : Queue<MemoryStream>
 
     private (MemoryStream, BinaryEncoder, Stream) PrepareStream()
     {
-        var stream =  new MemoryStream();
+        var stream = new MemoryStream();
         Stream writeStream = _compress ? new GZipStream(stream, CompressionLevel.Optimal) : stream;
         BinaryEncoder writer = new(writeStream);
         return (stream, writer, writeStream);
@@ -35,7 +35,8 @@ public sealed class ChunkQueue : Queue<MemoryStream>
 
     public bool Empty => _stream.Length == 0 && Count == 0;
 
-    public void EnqueueRest() {
+    public void EnqueueRest()
+    {
         if (_stream.Length > 0) Enqueue(_stream);
         _writeStream.Dispose();
     }

@@ -1,4 +1,4 @@
-using Codibre.GrpcSqlProxy.Client.Impl;
+﻿using Codibre.GrpcSqlProxy.Client.Impl;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Codibre.GrpcSqlProxy.Client;

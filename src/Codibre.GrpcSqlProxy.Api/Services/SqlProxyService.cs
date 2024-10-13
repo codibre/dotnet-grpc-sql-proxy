@@ -1,6 +1,6 @@
-using Grpc.Core;
-using Codibre.GrpcSqlProxy.Api.Utils;
+﻿using Codibre.GrpcSqlProxy.Api.Utils;
 using Codibre.GrpcSqlProxy.Common;
+using Grpc.Core;
 using static Codibre.GrpcSqlProxy.Api.SqlProxy;
 
 namespace Codibre.GrpcSqlProxy.Api.Services;

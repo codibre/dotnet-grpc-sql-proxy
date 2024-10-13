@@ -1,3 +1,3 @@
-namespace Codibre.GrpcSqlProxy.Common;
+﻿namespace Codibre.GrpcSqlProxy.Common;
 
 public delegate void ErrorHandlerEvent(object sender, Exception e);

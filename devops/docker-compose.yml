@@ -1,7 +1,7 @@
 version: '3'
 services:
   mssql_server:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04
     environment:
       - 'ACCEPT_EULA=Y'
       - 'MSSQL_SA_PASSWORD=Sa12345!'

@@ -6,7 +6,7 @@ public class SqlProxyClientOptions(string url, string connectionString)
 {
     public string SqlConnectionString { get; } = connectionString;
     public string Url { get; } = url;
-    public bool Compress { get; set;}
+    public bool Compress { get; set; }
     public int PacketSize { get; set; } = 1000;
 
     public SqlProxyClientOptions(IConfiguration configuration)

@@ -1,4 +1,4 @@
-namespace Codibre.GrpcSqlProxy.Client.Impl.Utils;
+﻿namespace Codibre.GrpcSqlProxy.Client.Impl.Utils;
 
 public static class GuidEx
 {

@@ -16,10 +16,15 @@ jobs:
       HUSKY: 0
       CI: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       # Install the .NET SDK indicated in the global.json file
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
+
+      - name: Prepare Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
 
       - name: Install dependencies
         run: npm ci
@@ -30,17 +35,12 @@ jobs:
         run: npm run prepare-test-db
 
       - name: Test
-        uses: paambaati/codeclimate-action@v2.6.0
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info
-          coverageLocations: ${{github.workspace}}/test/Codibre.MSSqlSession.Test/coverage/lcov.info:lcov
-      
-      - name: Prepare Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "lts/*"
+          coverageLocations: ${{github.workspace}}/test/Codibre.GrpcSqlProxy.Test/coverage/lcov.info:lcov
 
       - name: Semantic Release
         run: npm i -g @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/git @semantic-release/github @semantic-release/exec @droidsolutions-oss/semantic-release-nuget @semantic-release/release-notes-generator semantic-release @semantic-release/error

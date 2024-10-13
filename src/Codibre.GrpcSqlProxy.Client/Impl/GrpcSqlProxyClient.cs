@@ -1,6 +1,5 @@
-﻿using Grpc.Net.Client;
-using Codibre.GrpcSqlProxy.Api;
-using Microsoft.Extensions.Configuration;
+﻿using Codibre.GrpcSqlProxy.Api;
+using Grpc.Net.Client;
 
 namespace Codibre.GrpcSqlProxy.Client.Impl;
 

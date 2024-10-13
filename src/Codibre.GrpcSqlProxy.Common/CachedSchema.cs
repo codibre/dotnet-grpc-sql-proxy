@@ -1,4 +1,4 @@
-using Avro;
+﻿using Avro;
 using AvroSchemaGenerator;
 
 namespace Codibre.GrpcSqlProxy.Common;
@@ -12,7 +12,8 @@ public static class CachedSchema
         => _schemas.GetOrSet(schema, () => (RecordSchema)Schema.Parse(schema));
 
     public static (RecordSchema, string) GetCachedSchema(this Type type)
-        => _typeSchemas.GetOrSet(type, () => {
+        => _typeSchemas.GetOrSet(type, () =>
+        {
             var strSchema = type.GetSchema();
             return ((RecordSchema)Schema.Parse(strSchema), strSchema);
         });

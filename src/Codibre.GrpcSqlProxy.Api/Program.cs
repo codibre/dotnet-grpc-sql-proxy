@@ -1,4 +1,4 @@
-using Codibre.GrpcSqlProxy.Api.Services;
+﻿using Codibre.GrpcSqlProxy.Api.Services;
 
 namespace Codibre.GrpcSqlProxy.Api;
 
@@ -6,7 +6,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        WebApplication app = GetApp(args);
+        var app = GetApp(args);
         await app.RunAsync();
     }
 
