@@ -17,7 +17,7 @@ That said, this library tries to provide a workaround if it's not possible to ke
 
 ## How to use?
 
-First of all, you have to prepare the server. The docker image is ready to be used [here](https://hub.docker.com/r/codibre/grpc-mutex-api). You need to put it as services in the same cloud and region of your SQL Server. 
+First of all, you have to prepare the server. The docker image is ready to be used [here](https://hub.docker.com/r/codibre/dotnet-grpc-sql-proxy). You need to put it as services in the same cloud and region of your SQL Server. 
 
 About the client, you can check the test folder for some other examples, but the usage is quite simple. First, create a the client. You can create it manually, like this:
 
