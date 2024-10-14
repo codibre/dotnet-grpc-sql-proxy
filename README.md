@@ -4,7 +4,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a70dd4bf03f42c1f05b0/test_coverage)](https://codeclimate.com/github/codibre/dotnet-grpc-sql-proxy/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a70dd4bf03f42c1f05b0/maintainability)](https://codeclimate.com/github/codibre/dotnet-grpc-sql-proxy/maintainability)
 
-# Codibre.Codibre.GrpcSqlProxy.Client
+# Codibre.GrpcSqlProxy.Client
 
 A library to connect to a grpc sql proxy
 
