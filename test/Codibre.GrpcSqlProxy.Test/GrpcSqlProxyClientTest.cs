@@ -62,10 +62,10 @@ namespace Codibre.GrpcSqlProxy.Test
             // Act
             using var channel = client.CreateChannel();
             await channel.Execute("DELETE FROM TB_PEDIDO");
-            await channel.Execute("BEGIN TRANSACTION");
-            await channel.Execute("INSERT INTO TB_PEDIDO VALUES (1)");
+            await channel.BeginTransaction();
+            await channel.Execute("INSERT INTO TB_PEDIDO (CD_PEDIDO) VALUES (1)");
             var result1 = await channel.QueryFirstOrDefault<TB_PEDIDO>("SELECT * FROM TB_PEDIDO");
-            await channel.Execute("ROLLBACK");
+            await channel.Rollback();
             var result2 = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO").ToArrayAsync();
 
             // Assert
@@ -93,10 +93,10 @@ namespace Codibre.GrpcSqlProxy.Test
             // Act
             using var channel = client.CreateChannel();
             await channel.Execute("DELETE FROM TB_PRODUTO");
-            await channel.Execute("BEGIN TRANSACTION");
-            await channel.Execute("INSERT INTO TB_PRODUTO VALUES (1)");
+            await channel.BeginTransaction();
+            await channel.Execute("INSERT INTO TB_PRODUTO (CD_PRODUTO) VALUES (1)");
             var result1 = await channel.QueryFirstOrDefault<TB_PRODUTO>("SELECT * FROM TB_PRODUTO");
-            await channel.Execute("ROLLBACK");
+            await channel.Rollback();
             var result2 = await channel.Query<TB_PRODUTO>("SELECT * FROM TB_PRODUTO").ToArrayAsync();
 
             // Assert
@@ -156,10 +156,10 @@ namespace Codibre.GrpcSqlProxy.Test
             using var channel1 = client.CreateChannel();
             using var channel2 = client.CreateChannel();
             await channel1.Execute("DELETE FROM TB_PESSOA");
-            await channel1.Execute("INSERT INTO TB_PESSOA VALUES (1)");
-            await channel1.Execute("INSERT INTO TB_PESSOA VALUES (2)");
-            await channel1.Execute("BEGIN TRANSACTION");
-            await channel2.Execute("BEGIN TRANSACTION");
+            await channel1.Execute("INSERT INTO TB_PESSOA (CD_PESSOA) VALUES (1)");
+            await channel1.Execute("INSERT INTO TB_PESSOA (CD_PESSOA) VALUES (2)");
+            await channel1.BeginTransaction();
+            await channel2.BeginTransaction();
             await channel1.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 3 WHERE CD_PESSOA = @Id", new()
             {
                 Params = new
@@ -174,10 +174,10 @@ namespace Codibre.GrpcSqlProxy.Test
                     Id = 3
                 }
             });
-            await channel1.Execute("ROLLBACK");
+            await channel1.Rollback();
             await channel2.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 5 WHERE CD_PESSOA = 2");
             var result2 = await channel2.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA").ToArrayAsync();
-            await channel2.Execute("ROLLBACK");
+            await channel2.Rollback();
             var result3 = await channel1.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA", new()
             {
                 PacketSize = 1

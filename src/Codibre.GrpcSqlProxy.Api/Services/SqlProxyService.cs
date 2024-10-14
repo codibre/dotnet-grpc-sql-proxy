@@ -1,5 +1,6 @@
 ﻿using Codibre.GrpcSqlProxy.Api.Utils;
 using Codibre.GrpcSqlProxy.Common;
+using Dapper;
 using Grpc.Core;
 using static Codibre.GrpcSqlProxy.Api.SqlProxy;
 
@@ -27,7 +28,7 @@ namespace Codibre.GrpcSqlProxy.Api.Services
                         if (connection is not null)
                         {
                             if (request.PacketSize <= 0) request.PacketSize = 1000;
-                            responseStream.PipeResponse(connection, request);
+                            responseStream.PipeResponse(connection, request, proxyContext);
                         }
                     });
                 }
@@ -38,7 +39,19 @@ namespace Codibre.GrpcSqlProxy.Api.Services
             }
             finally
             {
-                if (proxyContext.Connection is not null) await proxyContext.Connection.CloseAsync();
+                if (proxyContext.Transaction is not null)
+                {
+                    try
+                    {
+                        await proxyContext.Transaction.RollbackAsync();
+                    }
+                    catch
+                    {
+                        // Ignore if error occurs as no transaction were there
+                    }
+                }
+                if (proxyContext.Connection is not null)
+                    await proxyContext.Connection.CloseAsync();
             }
         }
     }
