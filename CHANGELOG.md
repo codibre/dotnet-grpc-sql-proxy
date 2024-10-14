@@ -1,3 +1,11 @@
+# [0.1.0](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.0.2...v0.1.0) (2024-10-14)
+
+
+### Features
+
+* creating params support ([9c4b040](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/9c4b0406d2555d9f2d752c65b674e262e0d5e09b))
+* creating params support ([dc8cb4d](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/dc8cb4d5ee32c6183d257a85b348c904cbf9ec5e))
+
 ## [0.0.2](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.0.1...v0.0.2) (2024-10-13)
 
 
