@@ -63,9 +63,9 @@ using var channel = client.CreateChannel();
 Finally, you can run your queries:
 
 ```c#
-await channel.Execute("BEGIN TRANSACTION");
+await channel.BeginTransaction();
 await channel.Execute("INSERT INTO MyTable (Field1, Field2) VALUES ('test1', 123)");
-await channel.Execute("COMMIT");
+await channel.Commit();
 var result = await channel.QueryFirstOrDefault<TB_PRODUTO>("SELECT * FROM MyTable");
 ```
 
