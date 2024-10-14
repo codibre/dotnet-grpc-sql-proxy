@@ -160,13 +160,28 @@ public class GrpcSqlProxyClientTest : IDisposable
         await channel1.Execute("INSERT INTO TB_PESSOA VALUES (2)");
         await channel1.Execute("BEGIN TRANSACTION");
         await channel2.Execute("BEGIN TRANSACTION");
-        await channel1.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 3 WHERE CD_PESSOA = 1");
-        var result1 = await channel1.QueryFirst<TB_PESSOA>("SELECT * FROM TB_PESSOA WHERE CD_PESSOA = 3");
+        await channel1.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 3 WHERE CD_PESSOA = @Id", new()
+        {
+            Params = new
+            {
+                Id = 1
+            }
+        });
+        var result1 = await channel1.QueryFirst<TB_PESSOA>("SELECT * FROM TB_PESSOA WHERE CD_PESSOA = @Id", new()
+        {
+            Params = new
+            {
+                Id = 3
+            }
+        });
         await channel1.Execute("ROLLBACK");
         await channel2.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 5 WHERE CD_PESSOA = 2");
         var result2 = await channel2.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA").ToArrayAsync();
         await channel2.Execute("ROLLBACK");
-        var result3 = await channel1.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA").ToArrayAsync();
+        var result3 = await channel1.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA", new()
+        {
+            PacketSize = 1
+        }).ToArrayAsync();
 
         // Assert
         result1.Should().BeOfType<TB_PESSOA>();

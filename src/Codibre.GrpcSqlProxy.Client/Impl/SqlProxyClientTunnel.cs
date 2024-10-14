@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using System.Threading.Channels;
 using Avro.Generic;
 using Avro.IO;
@@ -9,12 +10,12 @@ using Grpc.Core;
 
 namespace Codibre.GrpcSqlProxy.Client.Impl;
 
-public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, SqlResponse> stream, SqlProxyClientOptions options) : ISqlProxyClientTunnel
+public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, SqlResponse> stream, SqlProxyClientOptions clientOptions) : ISqlProxyClientTunnel
 {
     private readonly ConcurrentDictionary<string, ChannelWriter<SqlResponse>> _responseHooks = new();
     private readonly AsyncDuplexStreamingCall<SqlRequest, SqlResponse> _stream = stream;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
-    private readonly string _connString = options.SqlConnectionString;
+    private readonly string _connString = clientOptions.SqlConnectionString;
     private bool _running = true;
     private bool _started = false;
 
@@ -59,17 +60,17 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
         }
     }
 
-    public async IAsyncEnumerable<T> Query<T>(string sql)
+    public async IAsyncEnumerable<T> Query<T>(string sql, SqlProxyQueryOptions? options = null)
     where T : class, new()
     {
         if (!_running) throw new InvalidOperationException("Tunnel closed");
         var type = typeof(T);
         var schema = type.GetCachedSchema();
 
-        var results = InternalRun(sql, schema.Item2);
+        var results = InternalRun(sql, schema.Item2, options);
         await foreach (var result in results)
         {
-            using var memStream = options.Compress ? result.Result.DecompressData() : result.Result.ToMemoryStream();
+            using var memStream = result.Compressed ? result.Result.DecompressData() : result.Result.ToMemoryStream();
             var reader = new BinaryDecoder(memStream);
             var datumReader = new GenericDatumReader<GenericRecord>(schema.Item1, schema.Item1);
             while (memStream.Position < memStream.Length)
@@ -86,12 +87,12 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
         }
     }
 
-    public async ValueTask Execute(string sql)
+    public async ValueTask Execute(string sql, SqlProxyQueryOptions? options = null)
     {
-        await InternalRun(sql, null).LastAsync();
+        await InternalRun(sql, null, options).LastAsync();
     }
 
-    private async IAsyncEnumerable<SqlResponse> InternalRun(string sql, string? schema)
+    private async IAsyncEnumerable<SqlResponse> InternalRun(string sql, string? schema, SqlProxyQueryOptions? options)
     {
         var id = GuidEx.NewBase64Guid();
         await _stream.RequestStream.WriteAsync(new()
@@ -100,7 +101,9 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
             ConnString = _started ? "" : _connString,
             Query = sql,
             Schema = schema ?? "",
-            Compress = options.Compress
+            Compress = options?.Compress ?? clientOptions.Compress,
+            PacketSize = options?.PacketSize ?? clientOptions.PacketSize,
+            Params = JsonSerializer.Serialize(options?.Params)
         });
         MonitorResponse();
         var channel = Channel.CreateUnbounded<SqlResponse>();
@@ -120,11 +123,11 @@ public sealed class SqlProxyClientTunnel(AsyncDuplexStreamingCall<SqlRequest, Sq
         _responseHooks.TryRemove(id, out _);
     }
 
-    public ValueTask<T?> QueryFirstOrDefault<T>(string sql) where T : class, new()
-        => Query<T>(sql).FirstOrDefaultAsync();
+    public ValueTask<T?> QueryFirstOrDefault<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new()
+        => Query<T>(sql, options).FirstOrDefaultAsync();
 
-    public ValueTask<T> QueryFirst<T>(string sql) where T : class, new()
-        => Query<T>(sql).FirstAsync();
+    public ValueTask<T> QueryFirst<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new()
+        => Query<T>(sql, options).FirstAsync();
 
     public void Dispose()
     {

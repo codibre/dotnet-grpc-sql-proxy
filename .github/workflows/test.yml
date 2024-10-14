@@ -20,6 +20,11 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
 
+      - name: Prepare Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
       - name: Install dependencies
         run: npm ci
 
@@ -27,12 +32,12 @@ jobs:
         run: npm run prepare-test-db
 
       - name: Test
-        uses: paambaati/codeclimate-action@v2.6.0
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info
-          coverageLocations: ${{github.workspace}}/test/Codibre.MSSqlSession.Test/coverage/lcov.info:lcov
+          coverageLocations: ${{github.workspace}}/test/Codibre.GrpcSqlProxy.Test/coverage/lcov.info:lcov
 
       - name: Unload Db
         run: npm run unload-test-db

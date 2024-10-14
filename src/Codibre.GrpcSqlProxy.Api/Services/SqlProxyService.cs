@@ -26,7 +26,7 @@ public class SqlProxyService : SqlProxyBase
                     var connection = await responseStream.GetConnection(proxyContext, request);
                     if (connection is not null)
                     {
-                        if (request.PacketSize == 0) request.PacketSize = 1000;
+                        if (request.PacketSize <= 0) request.PacketSize = 1000;
                         responseStream.PipeResponse(connection, request);
                     }
                 });

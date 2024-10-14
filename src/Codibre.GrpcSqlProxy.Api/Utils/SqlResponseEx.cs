@@ -4,12 +4,13 @@ namespace Codibre.GrpcSqlProxy.Api.Utils;
 
 public static class SqlResponseEx
 {
-    public static SqlResponse Create(string id, ByteString result, bool last) => new()
+    public static SqlResponse Create(string id, ByteString result, bool last, bool compressed) => new()
     {
         Id = id,
         Result = result,
         Error = "",
-        Last = last
+        Last = last,
+        Compressed = compressed
     };
 
     public static SqlResponse CreateError(string id, string error) => new()
@@ -17,6 +18,7 @@ public static class SqlResponseEx
         Id = id,
         Result = ByteString.Empty,
         Error = error,
-        Last = true
+        Last = true,
+        Compressed = false
     };
 }

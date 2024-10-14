@@ -65,13 +65,14 @@ public static class ResponseStreamExtensions
     private static Task WriteSuccess(
         this IServerStreamWriter<SqlResponse> responseStream,
         SqlRequest request,
-        (ByteString, bool) x)
+        (ByteString, bool, bool) x)
     {
         return responseStream.WriteSqlResponse(
             SqlResponseEx.Create(
                 request.Id,
                 x.Item1,
-                x.Item2
+                x.Item2,
+                x.Item3
             )
         );
     }
