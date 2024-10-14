@@ -98,7 +98,7 @@ csharp_style_var_elsewhere = true
 # Expression-bodied members
 csharp_style_expression_bodied_methods = false:none
 csharp_style_expression_bodied_constructors = none
-csharp_style_expression_bodied_operators = false:none
+csharp_style_expression_bodied_operators = false:silent
 csharp_style_expression_bodied_properties = true
 csharp_style_expression_bodied_indexers = true
 csharp_style_expression_bodied_accessors = true
@@ -148,7 +148,7 @@ csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
 csharp_using_directive_placement = outside_namespace:silent
 csharp_prefer_simple_using_statement = true
-csharp_style_namespace_declarations = file_scoped:error
+csharp_style_namespace_declarations = block_scoped:silent
 csharp_style_prefer_method_group_conversion = true
 csharp_style_prefer_top_level_statements = true
 csharp_style_expression_bodied_lambdas = true
@@ -176,13 +176,7 @@ dotnet_diagnostic.IDE0051.severity = error
 #IDE0051: unused private methods, fields, properties, and events (entire category of rules)
 dotnet_analyzer_diagnostic.category-CodeQuality.severity = error
 
-# IDE0160: Convert to block scoped namespace
-dotnet_diagnostic.IDE0160.severity = none
-# IDE0161: Convert to file scoped namespace 
-dotnet_diagnostic.IDE0161.severity = error
-
-# IDE0023: Use block body for conversion operator
-dotnet_diagnostic.IDE0023.severity = none
-
 # IDE0058: Expression value is never used
 dotnet_diagnostic.IDE0058.severity = none
+
+dotnet_diagnostic.IDE0005.severity = none

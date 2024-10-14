@@ -1,0 +1,3 @@
+{
+    "*.cs": "npm run lint:fix"
+}

@@ -1,9 +1,10 @@
-﻿namespace Codibre.GrpcSqlProxy.Client;
-
-public class SqlProxyQueryOptions()
+﻿namespace Codibre.GrpcSqlProxy.Client
 {
-    public bool? Compress { get; set; } = null;
-    public int? PacketSize { get; set; } = null;
+    public class SqlProxyQueryOptions()
+    {
+        public bool? Compress { get; set; } = null;
+        public int? PacketSize { get; set; } = null;
 
-    public object? Params { get; set; } = null;
+        public object? Params { get; set; } = null;
+    }
 }
