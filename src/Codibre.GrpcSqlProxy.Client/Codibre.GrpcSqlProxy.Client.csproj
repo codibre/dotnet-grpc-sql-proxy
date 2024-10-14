@@ -13,6 +13,7 @@
     <RepositoryUrl>https://github.com/codibre/dotnet-grpc-sql-proxy.git</RepositoryUrl> 
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>

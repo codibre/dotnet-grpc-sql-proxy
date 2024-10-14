@@ -3,85 +3,87 @@ using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.Data.SqlClient;
 
-namespace Codibre.GrpcSqlProxy.Api.Utils;
-
-public static class ResponseStreamExtensions
+namespace Codibre.GrpcSqlProxy.Api.Utils
 {
-    private static async Task<SqlConnection> OpenConnection(string connectionString)
+    public static class ResponseStreamExtensions
     {
-        var connection = new SqlConnection(connectionString);
-        await connection.OpenAsync();
-        return connection;
-    }
-
-    internal static async Task<SqlConnection?> GetConnection(
-        this IServerStreamWriter<SqlResponse> responseStream,
-        ProxyContext context,
-        SqlRequest request
-    )
-    {
-        var connString = request.ConnString;
-        if (string.IsNullOrWhiteSpace(connString))
+        private static async Task<SqlConnection> OpenConnection(string connectionString)
         {
-            if (context.Connection is null) responseStream.WriteError(request.Id, "Connection not established yet");
+            var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            return connection;
         }
-        else
+
+        internal static async Task<SqlConnection?> GetConnection(
+            this IServerStreamWriter<SqlResponse> responseStream,
+            ProxyContext context,
+            SqlRequest request
+        )
         {
-            if (context.Connection is null)
+            var connString = request.ConnString;
+            if (string.IsNullOrWhiteSpace(connString))
             {
-                context.ConnectionString = connString;
-                context.Connection = await OpenConnection(connString);
+                if (context.Connection is null) responseStream.WriteError(request.Id, "Connection not established yet");
             }
-            if (context.ConnectionString is not null && context.ConnectionString != connString)
+            else
             {
-                responseStream.WriteError(request.Id, "ConnectionString differs from first one");
-                return null;
+                if (context.Connection is null)
+                {
+                    context.ConnectionString = connString;
+                    context.Connection = await OpenConnection(connString);
+                }
+                if (context.ConnectionString is not null && context.ConnectionString != connString)
+                {
+                    responseStream.WriteError(request.Id, "ConnectionString differs from first one");
+                    return null;
+                }
+            }
+            return context.Connection;
+        }
+
+        public static async Task WriteSqlResponse(this IServerStreamWriter<SqlResponse> responseStream, SqlResponse response)
+        {
+            using var semaphore = await AsyncLock.Lock(responseStream);
+            await responseStream.WriteAsync(response);
+        }
+
+        public static async Task Catch(this IServerStreamWriter<SqlResponse> responseStream, string id, Func<Task> callback)
+        {
+            try
+            {
+                await callback();
+            }
+            catch (Exception ex)
+            {
+                responseStream.WriteError(id, ex.Message);
             }
         }
-        return context.Connection;
-    }
 
-    public static async Task WriteSqlResponse(this IServerStreamWriter<SqlResponse> responseStream, SqlResponse response)
-    {
-        using var semaphore = await AsyncLock.Lock(responseStream);
-        await responseStream.WriteAsync(response);
-    }
+        private static void WriteError(this IServerStreamWriter<SqlResponse> responseStream, string id, string message)
+            => _ = responseStream.WriteSqlResponse(SqlResponseEx.CreateError(id, message));
 
-    public static async Task Catch(this IServerStreamWriter<SqlResponse> responseStream, string id, Func<Task> callback)
-    {
-        try
+        private static Task WriteSuccess(
+            this IServerStreamWriter<SqlResponse> responseStream,
+            SqlRequest request,
+            (ByteString, bool, bool) x)
         {
-            await callback();
+            return responseStream.WriteSqlResponse(
+                SqlResponseEx.Create(
+                    request.Id,
+                    x.Item1,
+                    x.Item2,
+                    x.Item3
+                )
+            );
         }
-        catch (Exception ex)
-        {
-            responseStream.WriteError(id, ex.Message);
-        }
+
+        public static void PipeResponse(
+            this IServerStreamWriter<SqlResponse> responseStream,
+            SqlConnection connection,
+            SqlRequest request
+        ) => _ = responseStream.Catch(request.Id, () =>
+                connection.GetResult(request)
+                    .ForEachAwaitAsync((x) => responseStream.WriteSuccess(request, x))
+            );
     }
-
-    private static void WriteError(this IServerStreamWriter<SqlResponse> responseStream, string id, string message)
-        => _ = responseStream.WriteSqlResponse(SqlResponseEx.CreateError(id, message));
-
-    private static Task WriteSuccess(
-        this IServerStreamWriter<SqlResponse> responseStream,
-        SqlRequest request,
-        (ByteString, bool) x)
-    {
-        return responseStream.WriteSqlResponse(
-            SqlResponseEx.Create(
-                request.Id,
-                x.Item1,
-                x.Item2
-            )
-        );
-    }
-
-    public static void PipeResponse(
-        this IServerStreamWriter<SqlResponse> responseStream,
-        SqlConnection connection,
-        SqlRequest request
-    ) => _ = responseStream.Catch(request.Id, () =>
-            connection.GetResult(request)
-                .ForEachAwaitAsync((x) => responseStream.WriteSuccess(request, x))
-        );
 }

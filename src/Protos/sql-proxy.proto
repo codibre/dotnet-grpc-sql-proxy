@@ -15,6 +15,7 @@ message SqlRequest {
   string query = 4;
   int32 packetSize = 5;
   bool compress = 6;
+  optional string params = 7;
 }
 
 message SqlResponse {
@@ -22,4 +23,5 @@ message SqlResponse {
   optional bytes result = 2;
   optional string error = 3;
   bool last = 4;
+  bool compressed = 5;
 }

@@ -1,10 +1,11 @@
 ﻿using Codibre.GrpcSqlProxy.Api;
 using Grpc.Net.Client;
 
-namespace Codibre.GrpcSqlProxy.Client.Impl;
-
-public class GrpcSqlProxyClient(SqlProxyClientOptions options) : ISqlProxyClient
+namespace Codibre.GrpcSqlProxy.Client.Impl
 {
-    private readonly SqlProxy.SqlProxyClient _client = new(GrpcChannel.ForAddress(options.Url));
-    public ISqlProxyClientTunnel CreateChannel() => new SqlProxyClientTunnel(_client.Run(), options);
+    public class GrpcSqlProxyClient(SqlProxyClientOptions options) : ISqlProxyClient
+    {
+        private readonly SqlProxy.SqlProxyClient _client = new(GrpcChannel.ForAddress(options.Url));
+        public ISqlProxyClientTunnel CreateChannel() => new SqlProxyClientTunnel(_client.Run(), options);
+    }
 }

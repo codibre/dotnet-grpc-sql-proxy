@@ -73,7 +73,18 @@ While using the same channel, every command you'll be sent the same connection, 
 
 The details for each connection are sent by the application client, so, if you have two applications with the exact same connection string, the chances are that they'll share the same connection pools.
 
-Sql parameters are not supported yet but it's feasible to do so in the near future.
+You can also pass parameters, and it's possible to change compression or packetSize options for a single request, as showed below:
+```c#
+var result = await channel.QueryFirstOrDefault<TB_PRODUTO>("SELECT * FROM MyTable WHERE id = @Id", new()
+{
+    Params = new
+    {
+        Id = 1
+    },
+    PacketSize = 10,
+    Compress = false
+});
+```
 
 The result sets returned by the method **Query** are IAsyncEnumerable instances because the packets returned are processed on demand. This is done to keep the memory usage of the proxy controlled. For now, the methods available to execute sql commands are:
 

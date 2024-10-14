@@ -1,6 +1,7 @@
-﻿namespace Codibre.GrpcSqlProxy.Client;
-
-public interface ISqlProxyClient
+﻿namespace Codibre.GrpcSqlProxy.Client
 {
-    ISqlProxyClientTunnel CreateChannel();
+    public interface ISqlProxyClient
+    {
+        ISqlProxyClientTunnel CreateChannel();
+    }
 }
