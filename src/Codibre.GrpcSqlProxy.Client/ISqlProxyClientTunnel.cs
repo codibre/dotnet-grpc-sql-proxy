@@ -5,6 +5,9 @@ namespace Codibre.GrpcSqlProxy.Client
     public interface ISqlProxyClientTunnel : IDisposable
     {
         event ErrorHandlerEvent? ErrorHandler;
+        ValueTask BeginTransaction();
+        ValueTask Commit();
+        ValueTask Rollback();
         ValueTask Execute(string sql, SqlProxyQueryOptions? options = null);
         IAsyncEnumerable<T> Query<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();
         ValueTask<T?> QueryFirstOrDefault<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();

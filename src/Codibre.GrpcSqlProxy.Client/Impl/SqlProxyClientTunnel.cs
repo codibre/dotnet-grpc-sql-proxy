@@ -134,5 +134,11 @@ namespace Codibre.GrpcSqlProxy.Client.Impl
             _running = false;
             _cancellationTokenSource.Cancel();
         }
+
+        public ValueTask BeginTransaction() => Execute("BEGIN TRANSACTION");
+
+        public ValueTask Commit() => Execute("COMMIT");
+
+        public ValueTask Rollback() => Execute("ROLLBACK");
     }
 }

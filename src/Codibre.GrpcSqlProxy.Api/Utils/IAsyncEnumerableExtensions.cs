@@ -40,19 +40,56 @@ namespace Codibre.GrpcSqlProxy.Api.Utils
             yield return _empty;
         }
 
-        public static IAsyncEnumerable<(ByteString, bool, bool)> GetResult(
+        public static async IAsyncEnumerable<(ByteString, bool, bool)> EmptyResult(this ValueTask result)
+        {
+            await result;
+            yield return _empty;
+        }
+
+        public static async IAsyncEnumerable<(ByteString, bool, bool)> EmptyResult<T>(this ValueTask<T> result)
+        {
+            await result;
+            yield return _empty;
+        }
+
+        internal static IAsyncEnumerable<(ByteString, bool, bool)> GetResult(
             this SqlConnection connection,
-            SqlRequest request
+            SqlRequest request,
+            ProxyContext context
         )
         {
             var query = request.Query;
             var options = JsonConvert.DeserializeObject<Dictionary<string, object>?>(request.Params);
-            return string.IsNullOrWhiteSpace(request.Schema)
-                ? connection.ExecuteAsync(query, options)
-                    .EmptyResult()
-                : connection
-                    .QueryUnbufferedAsync(request.Query, options)
-                    .StreamByteChunks(request.Schema, request.PacketSize, request.Compress);
+            return query.ToUpperInvariant().Replace(";", "") switch
+            {
+                "BEGIN TRANSACTION" => StartTransaction(connection, context).EmptyResult(),
+                "COMMIT" => Commit(context).EmptyResult(),
+                "ROLLBACK" => Rollback(context).EmptyResult(),
+                _ => string.IsNullOrWhiteSpace(request.Schema)
+                                        ? connection.ExecuteAsync(query, options, context.Transaction)
+.EmptyResult()
+                                        : connection
+                                            .QueryUnbufferedAsync(request.Query, options, context.Transaction)
+.StreamByteChunks(request.Schema, request.PacketSize, request.Compress),
+            };
+            ;
+        }
+
+        private static async ValueTask Rollback(ProxyContext context)
+        {
+            await context.Transaction!.RollbackAsync();
+            context.Transaction = null;
+        }
+
+        private static async ValueTask Commit(ProxyContext context)
+        {
+            await context.Transaction!.CommitAsync();
+            context.Transaction = null;
+        }
+
+        private static async ValueTask StartTransaction(SqlConnection connection, ProxyContext context)
+        {
+            context.Transaction = await connection.BeginTransactionAsync();
         }
     }
 }

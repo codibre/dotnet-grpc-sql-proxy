@@ -77,12 +77,13 @@ namespace Codibre.GrpcSqlProxy.Api.Utils
             );
         }
 
-        public static void PipeResponse(
+        internal static void PipeResponse(
             this IServerStreamWriter<SqlResponse> responseStream,
             SqlConnection connection,
-            SqlRequest request
+            SqlRequest request,
+            ProxyContext context
         ) => _ = responseStream.Catch(request.Id, () =>
-                connection.GetResult(request)
+                connection.GetResult(request, context)
                     .ForEachAwaitAsync((x) => responseStream.WriteSuccess(request, x))
             );
     }
