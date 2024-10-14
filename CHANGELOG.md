@@ -1,3 +1,10 @@
+## [0.1.2](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.1.1...v0.1.2) (2024-10-14)
+
+
+### Bug Fixes
+
+* preparing transaction for MARS ([624f35e](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/624f35e37ee2c1399670a3ad199fa018838565a5))
+
 ## [0.1.1](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.1.0...v0.1.1) (2024-10-14)
 
 
