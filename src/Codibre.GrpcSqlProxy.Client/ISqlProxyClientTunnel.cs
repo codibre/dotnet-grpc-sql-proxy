@@ -1,16 +1,18 @@
 ﻿using Codibre.GrpcSqlProxy.Common;
 
-namespace Codibre.GrpcSqlProxy.Client
+namespace Codibre.GrpcSqlProxy.Client;
+
+public interface ISqlProxyClientTunnel : IDisposable
 {
-    public interface ISqlProxyClientTunnel : IDisposable
-    {
-        event ErrorHandlerEvent? ErrorHandler;
-        ValueTask BeginTransaction();
-        ValueTask Commit();
-        ValueTask Rollback();
-        ValueTask Execute(string sql, SqlProxyQueryOptions? options = null);
-        IAsyncEnumerable<T> Query<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();
-        ValueTask<T?> QueryFirstOrDefault<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();
-        ValueTask<T> QueryFirst<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();
-    }
+    event ErrorHandlerEvent? ErrorHandler;
+
+    ISqlProxyBatchQuery Batch { get; }
+    ValueTask BeginTransaction();
+    ValueTask Commit();
+    ValueTask Rollback();
+    ValueTask Execute(string sql, SqlProxyQueryOptions? options = null);
+    IAsyncEnumerable<T> Query<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();
+    ValueTask<T?> QueryFirstOrDefault<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();
+    ValueTask<T> QueryFirst<T>(string sql, SqlProxyQueryOptions? options = null) where T : class, new();
+    Reader QueryMultipleAsync(string sql, string[] schemas, SqlProxyQueryOptions? options);
 }

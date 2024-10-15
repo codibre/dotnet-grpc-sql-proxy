@@ -10,7 +10,7 @@ service SqlProxy {
 
 message SqlRequest {
   string id = 1;
-  optional string schema = 2;
+  repeated string schema = 2;
   string connString = 3;
   string query = 4;
   int32 packetSize = 5;
@@ -18,10 +18,17 @@ message SqlRequest {
   optional string params = 7;
 }
 
+enum LastEnum {
+  Mid = 0;
+  SetLast = 1;
+  Last = 2;
+}
+
 message SqlResponse {
   string id = 1;
   optional bytes result = 2;
   optional string error = 3;
-  bool last = 4;
+  LastEnum last = 4;
   bool compressed = 5;
+  int32 index = 6;
 }
