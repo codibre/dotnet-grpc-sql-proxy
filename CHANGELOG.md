@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.1.3...v0.2.0) (2024-10-16)
+
+
+### Features
+
+* supporting batchquery ([488427a](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/488427a69cfcdd62eb5afcdc11ff7cc983021425))
+
 ## [0.1.3](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.1.2...v0.1.3) (2024-10-14)
 
 
