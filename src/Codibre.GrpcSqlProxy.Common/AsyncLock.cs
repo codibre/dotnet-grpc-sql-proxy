@@ -1,34 +1,33 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Codibre.GrpcSqlProxy.Common
+namespace Codibre.GrpcSqlProxy.Common;
+
+public sealed class AsyncLock : IDisposable
 {
-    public sealed class AsyncLock : IDisposable
+    private static readonly ConcurrentDictionary<object, SemaphoreSlim> _semaphores = new();
+    private readonly object _key;
+    private readonly SemaphoreSlim _semaphore;
+    private AsyncLock(object key, SemaphoreSlim semaphore)
     {
-        private static readonly ConcurrentDictionary<object, SemaphoreSlim> _semaphores = new();
-        private readonly object _key;
-        private readonly SemaphoreSlim _semaphore;
-        private AsyncLock(object key, SemaphoreSlim semaphore)
-        {
-            _key = key;
-            _semaphore = semaphore;
-        }
+        _key = key;
+        _semaphore = semaphore;
+    }
 
-        public static async Task<AsyncLock> Lock(object lockObject)
+    public static async Task<AsyncLock> Lock(object lockObject)
+    {
+        if (!_semaphores.TryGetValue(lockObject, out var semaphore))
         {
-            if (!_semaphores.TryGetValue(lockObject, out var semaphore))
-            {
-                semaphore = new SemaphoreSlim(1, 1);
-                _semaphores[lockObject] = semaphore;
-            }
-            await semaphore.WaitAsync();
-
-            return new AsyncLock(lockObject, semaphore);
+            semaphore = new SemaphoreSlim(1, 1);
+            _semaphores[lockObject] = semaphore;
         }
+        await semaphore.WaitAsync();
 
-        public void Dispose()
-        {
-            _semaphores.TryRemove(_key, out _);
-            _semaphore.Release();
-        }
+        return new AsyncLock(lockObject, semaphore);
+    }
+
+    public void Dispose()
+    {
+        _semaphores.TryRemove(_key, out _);
+        _semaphore.Release();
     }
 }

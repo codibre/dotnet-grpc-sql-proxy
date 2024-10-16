@@ -21,11 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper-QueryBuilder" Version="2.0.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.53.0" />
     <PackageReference Include="Grpc.Tools" Version="2.54.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
@@ -35,6 +37,6 @@
     <ProjectReference Include="..\Codibre.GrpcSqlProxy.Common\Codibre.GrpcSqlProxy.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
