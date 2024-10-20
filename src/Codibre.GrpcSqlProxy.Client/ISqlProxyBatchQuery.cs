@@ -42,7 +42,7 @@ public interface ISqlProxyBatchQuery
     IResultHook<T> QueryFirstHook<T>(FormattableString builtScript, object token) where T : class, new();
     IResultHook<T?> QueryFirstOrDefaultHook<T>(FormattableString builtScript) where T : class, new();
     IResultHook<T?> QueryFirstOrDefaultHook<T>(FormattableString builtScript, object token) where T : class, new();
-    Task RunQueries(SqlProxyQueryOptions? options = null);
+    Task RunQueries(SqlProxyBatchQueryOptions? options = null);
     Task Execute(TimeSpan? customTimeout = null);
 
     T Get<T>(object token);
@@ -56,13 +56,13 @@ public interface ISqlProxyBatchQuery
     IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyQueryOptions? options = null,
+        SqlProxyBatchQueryOptions? options = null,
         int paramMargin = 100
     );
     IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, TOutput> PreRunQuery,
-        SqlProxyQueryOptions? options = null,
+        SqlProxyBatchQueryOptions? options = null,
         int paramMargin = 100
     );
 

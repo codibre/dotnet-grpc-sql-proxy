@@ -12,7 +12,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
     private static readonly FormattableString _beginTran = $"BEGIN TRAN;";
     private static readonly object _waiting = new();
     private readonly ScriptBuilder _builder = new();
-    private readonly SqlProxyQueryOptions? _options = null;
+    private readonly SqlProxyBatchQueryOptions? _options = null;
     private readonly List<Type> _types = [];
     private readonly Dictionary<object, object?> _results = [];
     private readonly List<Func<Reader, Task>> _hooks = [];
@@ -74,7 +74,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
             async (reader) => SetResult(token, await reader.ReadAsync<T>().ToArrayAsync())
         );
 
-    public async Task RunQueries(SqlProxyQueryOptions? options)
+    public async Task RunQueries(SqlProxyBatchQueryOptions? options)
     {
         if (_builder.QueryCount <= 0) return;
         var reader = _tunnel.QueryMultipleAsync(
@@ -138,7 +138,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
     private async IAsyncEnumerable<IList<KeyValuePair<TInput, TOutput>>> InternalPrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyQueryOptions? options,
+        SqlProxyBatchQueryOptions? options,
         int paramMargin = 100
     )
     {
@@ -169,14 +169,14 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
     public IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyQueryOptions? options = null,
+        SqlProxyBatchQueryOptions? options = null,
         int paramMargin = 100
     ) => InternalPrepareEnumerable(enumerable, PreRunQuery, options, paramMargin)
             .SelectMany(x => x.ToAsyncEnumerable());
     public IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, TOutput> PreRunQuery,
-        SqlProxyQueryOptions? options = null,
+        SqlProxyBatchQueryOptions? options = null,
         int paramMargin = 100
     ) => PrepareEnumerable(
         enumerable,
@@ -329,14 +329,14 @@ public static class BatchQueryExtension
         this IEnumerable<TInput> enumerable,
         ISqlProxyBatchQuery batchQuery,
         Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyQueryOptions? options = null,
+        SqlProxyBatchQueryOptions? options = null,
         int paramMargin = 100
     ) => batchQuery.PrepareEnumerable(enumerable, PreRunQuery, options, paramMargin);
     public static IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareQueryBatch<TInput, TOutput>(
         this IEnumerable<TInput> enumerable,
         ISqlProxyBatchQuery batchQuery,
         Func<TInput, ISqlProxyBatchQuery, TOutput> PreRunQuery,
-        SqlProxyQueryOptions? options = null,
+        SqlProxyBatchQueryOptions? options = null,
         int paramMargin = 100
     ) => batchQuery.PrepareEnumerable(
         enumerable,
