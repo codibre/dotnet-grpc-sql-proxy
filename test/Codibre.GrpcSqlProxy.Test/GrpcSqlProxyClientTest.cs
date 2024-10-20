@@ -3,6 +3,8 @@ using Codibre.GrpcSqlProxy.Client;
 using Codibre.GrpcSqlProxy.Client.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
@@ -23,6 +25,35 @@ public class GrpcSqlProxyClientTest
                 Compress = false
             }
         );
+
+        // Act
+        using var channel = client.CreateChannel();
+        await channel.Execute("DELETE FROM TB_PEDIDO");
+        await channel.BeginTransaction();
+        await channel.Execute("INSERT INTO TB_PEDIDO (CD_PEDIDO) VALUES (1)");
+        var result1 = await channel.QueryFirstOrDefault<TB_PEDIDO>("SELECT * FROM TB_PEDIDO");
+        await channel.Rollback();
+        var result2 = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO").ToArrayAsync();
+
+        // Assert
+        result1.Should().BeOfType<TB_PEDIDO>();
+        result2.Should().BeOfType<TB_PEDIDO[]>();
+        result1.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 1 });
+        result2.Should().BeEquivalentTo(Array.Empty<TB_PEDIDO>());
+    }
+
+    [Fact]
+    public async Task Should_Inject_SqlProxy_Properly()
+    {
+        // Arrange
+        var server = await TestServer.Get();
+        var builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration.GetSection("GrpcSqlProxy").GetSection("Url").Value = server.Url;
+        builder.Configuration.GetSection("GrpcSqlProxy").GetSection("Compress").Value = "False";
+        builder.Configuration.GetSection("GrpcSqlProxy").GetSection("PacketSize").Value = "2000";
+        builder.Services.AddGrpcSqlProxy();
+        var app = builder.Build();
+        var client = app.Services.GetRequiredService<ISqlProxyClient>();
 
         // Act
         using var channel = client.CreateChannel();
