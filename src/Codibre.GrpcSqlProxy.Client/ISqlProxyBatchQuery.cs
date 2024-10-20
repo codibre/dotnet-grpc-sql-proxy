@@ -36,11 +36,8 @@ public interface ISqlProxyBatchQuery
     /// Adiciona uma instrução COMMIT ao batch, para finalizar a transação
     /// </summary>
     void AddFinishTransaction();
-    IResultHook<IEnumerable<T>> QueryHook<T>(FormattableString builtScript) where T : class, new();
     IResultHook<IEnumerable<T>> QueryHook<T>(FormattableString builtScript, object token) where T : class, new();
-    IResultHook<T> QueryFirstHook<T>(FormattableString builtScript) where T : class, new();
     IResultHook<T> QueryFirstHook<T>(FormattableString builtScript, object token) where T : class, new();
-    IResultHook<T?> QueryFirstOrDefaultHook<T>(FormattableString builtScript) where T : class, new();
     IResultHook<T?> QueryFirstOrDefaultHook<T>(FormattableString builtScript, object token) where T : class, new();
     Task RunQueries(SqlProxyBatchQueryOptions? options = null);
     Task Execute(TimeSpan? customTimeout = null);
@@ -56,49 +53,8 @@ public interface ISqlProxyBatchQuery
     IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyBatchQueryOptions? options = null,
-        int paramMargin = 100
+        SqlProxyBatchQueryOptions? options = null
     );
-    IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
-        IEnumerable<TInput> enumerable,
-        Func<TInput, ISqlProxyBatchQuery, TOutput> PreRunQuery,
-        SqlProxyBatchQueryOptions? options = null,
-        int paramMargin = 100
-    );
-
-    /// <summary>
-    /// Usa o callback para montar uma transação que será executada em lote com o banco.
-    /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
-    /// demais para o driver do SQL suportar o comando, mas, para isso, é preciso inserir
-    /// as operações usando o método AddTransactionScript, que irá partir os comandos
-    /// acumulados em vários scripts e enviá-los sequencialmente, se necessário.
-    /// </summary>
-    /// <param name="query">O callback que irá executar a pesquisa. Recebe uma referência ao próprio batchQuery</param>
-    /// <param name="paramMargin">Margem de segurança para o limite de parâmetros, isto é, o script será quebrado se a quantidade ultrapassar o máximo - essa margem. O padrão é 100</param>
-    /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task RunInTransaction(Func<ISqlProxyBatchQuery, ValueTask> query, int paramMargin = 100);
-    /// <summary>
-    /// Usa o callback para montar uma transação que será executada em lote com o banco.
-    /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
-    /// demais para o driver do SQL suportar o comando, mas, para isso, é preciso inserir
-    /// as operações usando o método AddTransactionScript, que irá partir os comandos
-    /// acumulados em vários scripts e enviá-los sequencialmente, se necessário.
-    /// </summary>
-    /// <param name="query">O callback que irá executar a pesquisa.</param>
-    /// <param name="paramMargin">Margem de segurança para o limite de parâmetros, isto é, o script será quebrado se a quantidade ultrapassar o máximo - essa margem. O padrão é 100</param>
-    /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task RunInTransaction(Func<ValueTask> query, int paramMargin = 100);
-    /// <summary>
-    /// Usa o callback para montar uma transação que será executada em lote com o banco.
-    /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
-    /// demais para o driver do SQL suportar o comando, mas, para isso, é preciso inserir
-    /// as operações usando o método AddTransactionScript, que irá partir os comandos
-    /// acumulados em vários scripts e enviá-los sequencialmente, se necessário.
-    /// </summary>
-    /// <param name="query">O callback que irá executar a pesquisa. Recebe uma referência ao próprio batchQuery</param>
-    /// <param name="paramMargin">Margem de segurança para o limite de parâmetros, isto é, o script será quebrado se a quantidade ultrapassar o máximo - essa margem. O padrão é 100</param>
-    /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task RunInTransaction(Action<ISqlProxyBatchQuery> query, int paramMargin = 100);
     /// <summary>
     /// Usa o callback para montar uma transação que será executada em lote com o banco.
     /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
@@ -110,50 +66,6 @@ public interface ISqlProxyBatchQuery
     /// <param name="options">Para definir margem de segurança e um timeout de comando customizado</param>
     /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
     Task RunInTransaction(Func<ISqlProxyBatchQuery, ValueTask> query, RunInTransactionOptions options);
-    /// <summary>
-    /// Usa o callback para montar uma transação que será executada em lote com o banco.
-    /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
-    /// demais para o driver do SQL suportar o comando, mas, para isso, é preciso inserir
-    /// as operações usando o método AddTransactionScript, que irá partir os comandos
-    /// acumulados em vários scripts e enviá-los sequencialmente, se necessário.
-    /// </summary>
-    /// <param name="query">O callback que irá executar a pesquisa.</param>
-    /// <param name="options">Para definir margem de segurança e um timeout de comando customizado</param>
-    /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task RunInTransaction(Func<ValueTask> query, RunInTransactionOptions options);
-    /// <summary>
-    /// Usa o callback para montar uma transação que será executada em lote com o banco.
-    /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
-    /// demais para o driver do SQL suportar o comando, mas, para isso, é preciso inserir
-    /// as operações usando o método AddTransactionScript, que irá partir os comandos
-    /// acumulados em vários scripts e enviá-los sequencialmente, se necessário.
-    /// </summary>
-    /// <param name="query">O callback que irá executar a pesquisa.</param>
-    /// <param name="options">Para definir margem de segurança e um timeout de comando customizado</param>
-    /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task RunInTransaction(Action query, RunInTransactionOptions options);
-    /// <summary>
-    /// Usa o callback para montar uma transação que será executada em lote com o banco.
-    /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
-    /// demais para o driver do SQL suportar o comando, mas, para isso, é preciso inserir
-    /// as operações usando o método AddTransactionScript, que irá partir os comandos
-    /// acumulados em vários scripts e enviá-los sequencialmente, se necessário.
-    /// </summary>
-    /// <param name="query">O callback que irá executar a pesquisa.</param>
-    /// <param name="options">Para definir margem de segurança e um timeout de comando customizado</param>
-    /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task<T> RunInTransaction<T>(Func<ValueTask<T>> query, RunInTransactionOptions? options = null);
-    /// <summary>
-    /// Usa o callback para montar uma transação que será executada em lote com o banco.
-    /// Este método quebrará o lote em vários caso o número de parâmetros fique grande
-    /// demais para o driver do SQL suportar o comando, mas, para isso, é preciso inserir
-    /// as operações usando o método AddTransactionScript, que irá partir os comandos
-    /// acumulados em vários scripts e enviá-los sequencialmente, se necessário.
-    /// </summary>
-    /// <param name="query">O callback que irá executar a pesquisa.</param>
-    /// <param name="options">Para definir margem de segurança e um timeout de comando customizado</param>
-    /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task<T> RunInTransaction<T>(Func<ISqlProxyBatchQuery, ValueTask<T>> query, RunInTransactionOptions? options = null);
 
     /// <summary>
     /// Cancela transação que está sendo montada no batch.
