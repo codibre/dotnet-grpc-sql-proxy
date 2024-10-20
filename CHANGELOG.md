@@ -1,3 +1,10 @@
+## [0.2.3](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.2...v0.2.3) (2024-10-20)
+
+
+### Bug Fixes
+
+* refactor batch query for better maintainability ([e7471d9](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/e7471d91c434a78c3445a4c8afa8ca76e8313082))
+
 ## [0.2.2](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.1...v0.2.2) (2024-10-20)
 
 
