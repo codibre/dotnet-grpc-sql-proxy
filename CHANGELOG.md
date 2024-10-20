@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.0...v0.2.1) (2024-10-20)
+
+
+### Bug Fixes
+
+* fixing badges ([7dad33e](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/7dad33eeef2f5fe3c03f15839f80fc3d1a9c114b))
+
 # [0.2.0](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.1.3...v0.2.0) (2024-10-16)
 
 
