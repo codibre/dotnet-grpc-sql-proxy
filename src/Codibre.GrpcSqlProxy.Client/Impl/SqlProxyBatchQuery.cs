@@ -16,11 +16,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
     private readonly List<Type> _types = [];
     private readonly Dictionary<object, object?> _results = [];
     private readonly List<Func<Reader, Task>> _hooks = [];
-    private bool _inTransaction = false;
-    private bool _transactionOpen = false;
-    private bool _transactionCanceled = false;
-    private bool _transactionWithHooks = false;
-    private RunInTransactionOptions? _transactionOptions = null;
+    private TransactionContext? _transaction = null;
 
     public string Sql => _builder.Sql;
     public int QueryCount => _builder.QueryCount;
@@ -40,7 +36,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
 
     private IResultHook<T> AddHook<T, R>(FormattableString builtScript, object token, Func<Reader, Task> hook)
     {
-        if (_inTransaction) _transactionWithHooks = true;
+        if (_transaction is not null) _transaction.TransactionWithHooks = true;
         if (SetResult(token, _waiting))
         {
             _builder.Add(builtScript);
@@ -51,23 +47,15 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
         return new ResultHookCallback<T>(() => Get<T>(token));
     }
 
-    public IResultHook<T> QueryFirstHook<T>(FormattableString builtScript)
-    where T : class, new() => QueryFirstHook<T>(builtScript, new object());
-
     public IResultHook<T> QueryFirstHook<T>(FormattableString builtScript, object token)
     where T : class, new() => AddHook<T, T>(builtScript, token,
             async (reader) => SetResult(token, await reader.ReadFirstAsync<T>())
         );
 
-    public IResultHook<T?> QueryFirstOrDefaultHook<T>(FormattableString builtScript)
-    where T : class, new() => QueryFirstOrDefaultHook<T>(builtScript, new object());
     public IResultHook<T?> QueryFirstOrDefaultHook<T>(FormattableString builtScript, object token)
     where T : class, new() => AddHook<T?, T>(builtScript, token,
             async (reader) => SetResult(token, await reader.ReadFirstOrDefaultAsync<T>())
         );
-
-    public IResultHook<IEnumerable<T>> QueryHook<T>(FormattableString builtScript)
-    where T : class, new() => QueryHook<T>(builtScript, new object());
 
     public IResultHook<IEnumerable<T>> QueryHook<T>(FormattableString builtScript, object token)
     where T : class, new() => AddHook<IEnumerable<T>, T>(builtScript, token,
@@ -101,7 +89,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
 
     public async Task Execute(TimeSpan? customTimeout = null)
     {
-        if (_transactionWithHooks) throw new InvalidOperationException("Operation invalid for hooked transaction");
+        if (_transaction?.TransactionWithHooks is true) throw new InvalidOperationException("Operation invalid for hooked transaction");
         if (_builder.QueryCount <= 0) return;
         await _tunnel.Execute(_builder.Sql, new()
         {
@@ -129,7 +117,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
 
     private void ClearPendingRun()
     {
-        _transactionWithHooks = false;
+        if (_transaction is not null) _transaction.TransactionWithHooks = false;
         _builder.Clear();
         _hooks.Clear();
         _types.Clear();
@@ -138,8 +126,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
     private async IAsyncEnumerable<IList<KeyValuePair<TInput, TOutput>>> InternalPrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyBatchQueryOptions? options,
-        int paramMargin = 100
+        SqlProxyBatchQueryOptions? options
     )
     {
         try
@@ -155,7 +142,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
                     var preparedValue = await PreRunQuery(current, this);
                     result.Add(new KeyValuePair<TInput, TOutput>(current, preparedValue));
                     hasNext = enumerator.MoveNext();
-                } while (hasNext && ParamCount + paramMargin < _builder.ParamLimit);
+                } while (hasNext && ParamCount + (options?.ParamMargin ?? 100) < _builder.ParamLimit);
                 await RunQueries(options);
                 yield return result;
             }
@@ -169,27 +156,15 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
     public IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
         IEnumerable<TInput> enumerable,
         Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyBatchQueryOptions? options = null,
-        int paramMargin = 100
-    ) => InternalPrepareEnumerable(enumerable, PreRunQuery, options, paramMargin)
+        SqlProxyBatchQueryOptions? options = null
+    ) => InternalPrepareEnumerable(enumerable, PreRunQuery, options)
             .SelectMany(x => x.ToAsyncEnumerable());
-    public IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareEnumerable<TInput, TOutput>(
-        IEnumerable<TInput> enumerable,
-        Func<TInput, ISqlProxyBatchQuery, TOutput> PreRunQuery,
-        SqlProxyBatchQueryOptions? options = null,
-        int paramMargin = 100
-    ) => PrepareEnumerable(
-        enumerable,
-        (input, bq) => new ValueTask<TOutput>(PreRunQuery(input, bq)),
-        options,
-        paramMargin
-    );
 
     private async ValueTask InternalFlushTransaction()
     {
-        if (!_transactionOpen)
+        if (!_transaction!.TransactionOpen)
         {
-            _transactionOpen = true;
+            _transaction.TransactionOpen = true;
             await _tunnel.BeginTransaction();
         }
         await ExecuteInTransaction();
@@ -197,7 +172,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
     public async ValueTask AddTransactionScript(FormattableString builtScript)
     {
         ValidateInTransaction();
-        if (_builder.ParamCount + _transactionOptions!.ParamMargin >= _builder.ParamLimit)
+        if (_builder.ParamCount + _transaction!.TransactionOptions.ParamMargin >= _builder.ParamLimit)
         {
             await InternalFlushTransaction();
         }
@@ -212,50 +187,23 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
 
     private void ValidateInTransaction()
     {
-        if (!_inTransaction) throw new InvalidOperationException("Must run inside RunInTransaction callback");
+        if (_transaction is null) throw new InvalidOperationException("Must run inside RunInTransaction callback");
     }
-
-    public Task RunInTransaction(Func<ISqlProxyBatchQuery, ValueTask> query, int paramMargin = 100)
-        => RunInTransaction(query, new RunInTransactionOptions
-        {
-            ParamMargin = paramMargin
-        });
-
-    public Task RunInTransaction(Func<ValueTask> query, int paramMargin = 100)
-        => RunInTransaction((_) => query(), paramMargin);
-
-    public Task RunInTransaction(Action<ISqlProxyBatchQuery> query, int paramMargin = 100)
-        => RunInTransaction((bq) =>
-        {
-            query(bq);
-            return new ValueTask();
-        }, paramMargin);
-
-    public Task RunInTransaction(Action query, int paramMargin = 100)
-        => RunInTransaction((bq) =>
-        {
-            query();
-            return new ValueTask();
-        }, paramMargin);
 
     public async Task RunInTransaction(Func<ISqlProxyBatchQuery, ValueTask> query, RunInTransactionOptions options)
     {
-        if (_inTransaction) throw new InvalidOperationException("RunInTransaction Already called");
+        if (_transaction is not null) throw new InvalidOperationException("RunInTransaction Already called");
         if (_builder.QueryCount > 0) throw new InvalidOperationException("Query buffer not empty");
+        _transaction = new(options);
         try
         {
-            _inTransaction = true;
-            _transactionOpen = false;
-            _transactionCanceled = false;
-            _transactionWithHooks = false;
-            _transactionOptions = options;
             await query(this);
-            if (_transactionCanceled)
+            if (_transaction.TransactionCanceled)
             {
                 await _tunnel.Rollback();
                 Clear();
             }
-            else if (_transactionOpen)
+            else if (_transaction.TransactionOpen)
             {
                 await ExecuteInTransaction();
                 await _tunnel.Commit();
@@ -269,79 +217,25 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
         }
         catch (Exception)
         {
-            if (_transactionOpen) await _tunnel.Rollback();
+            if (_transaction.TransactionOpen) await _tunnel.Rollback();
             throw;
         }
         finally
         {
-            _inTransaction = false;
-            _transactionOpen = false;
-            _transactionCanceled = false;
-            _transactionWithHooks = false;
-            _transactionOptions = null;
+            _transaction = null;
         }
     }
 
     private async Task ExecuteInTransaction(
     )
     {
-        if (_transactionWithHooks) await RunQueries(_options);
-        else await Execute(_transactionOptions!.CustomTimeout);
-    }
-
-    public Task RunInTransaction(Func<ValueTask> query, RunInTransactionOptions options)
-        => RunInTransaction((_) => query(), options);
-
-    public Task RunInTransaction(Action query, RunInTransactionOptions options)
-        => RunInTransaction((_) =>
-        {
-            query();
-            return new ValueTask();
-        }, options);
-
-    public async Task<T> RunInTransaction<T>(Func<ValueTask<T>> query, RunInTransactionOptions? options = null)
-        => await RunInTransaction((_) => query(), options);
-
-    public async Task<T> RunInTransaction<T>(Func<ISqlProxyBatchQuery, ValueTask<T>> query, RunInTransactionOptions? options = null)
-    {
-        T? result = default;
-        if (options is null) await RunInTransaction(async (bq) =>
-        {
-            result = await query(bq);
-        });
-        else await RunInTransaction(async (bq) =>
-        {
-            result = await query(bq);
-        }, options);
-        return result!;
+        if (_transaction!.TransactionWithHooks) await RunQueries(_options);
+        else await Execute(_transaction?.TransactionOptions.CustomTimeout);
     }
 
     public void CancelTransaction()
     {
         ValidateInTransaction();
-        _transactionCanceled = true;
+        if (_transaction is not null) _transaction.TransactionCanceled = true;
     }
-}
-
-public static class BatchQueryExtension
-{
-    public static IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareQueryBatch<TInput, TOutput>(
-        this IEnumerable<TInput> enumerable,
-        ISqlProxyBatchQuery batchQuery,
-        Func<TInput, ISqlProxyBatchQuery, ValueTask<TOutput>> PreRunQuery,
-        SqlProxyBatchQueryOptions? options = null,
-        int paramMargin = 100
-    ) => batchQuery.PrepareEnumerable(enumerable, PreRunQuery, options, paramMargin);
-    public static IAsyncEnumerable<KeyValuePair<TInput, TOutput>> PrepareQueryBatch<TInput, TOutput>(
-        this IEnumerable<TInput> enumerable,
-        ISqlProxyBatchQuery batchQuery,
-        Func<TInput, ISqlProxyBatchQuery, TOutput> PreRunQuery,
-        SqlProxyBatchQueryOptions? options = null,
-        int paramMargin = 100
-    ) => batchQuery.PrepareEnumerable(
-        enumerable,
-        (input, bq) => new ValueTask<TOutput>(PreRunQuery(input, bq)),
-        options,
-        paramMargin
-    );
 }

@@ -4,4 +4,5 @@ public class SqlProxyBatchQueryOptions()
 {
     public bool? Compress { get; set; } = null;
     public int? PacketSize { get; set; } = null;
+    public int? ParamMargin { get; set; } = null;
 }
