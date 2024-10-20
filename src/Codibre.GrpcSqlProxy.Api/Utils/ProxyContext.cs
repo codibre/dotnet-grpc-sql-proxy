@@ -51,7 +51,7 @@ internal sealed class ProxyContext(string _connectionString) : IAsyncDisposable
 
     internal async ValueTask Rollback()
     {
-        await _transaction!.RollbackAsync();
+        if (_transaction is not null) await _transaction.RollbackAsync();
         _transaction = null;
     }
 

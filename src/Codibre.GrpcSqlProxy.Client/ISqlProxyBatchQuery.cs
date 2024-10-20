@@ -65,7 +65,7 @@ public interface ISqlProxyBatchQuery
     /// <param name="query">O callback que irá executar a pesquisa.</param>
     /// <param name="options">Para definir margem de segurança e um timeout de comando customizado</param>
     /// <returns>Retorna uma task, que deve ser aguardada, que irá executar a transação</returns>
-    Task RunInTransaction(Func<ISqlProxyBatchQuery, ValueTask> query, RunInTransactionOptions options);
+    Task<T> RunInTransaction<T>(Func<ISqlProxyBatchQuery, ValueTask<T>> query, RunInTransactionOptions? options = null);
 
     /// <summary>
     /// Cancela transação que está sendo montada no batch.

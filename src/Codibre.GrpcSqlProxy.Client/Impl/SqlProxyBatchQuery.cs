@@ -190,30 +190,18 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
         if (_transaction is null) throw new InvalidOperationException("Must run inside RunInTransaction callback");
     }
 
-    public async Task RunInTransaction(Func<ISqlProxyBatchQuery, ValueTask> query, RunInTransactionOptions options)
+    public async Task<T> RunInTransaction<T>(Func<ISqlProxyBatchQuery, ValueTask<T>> query, RunInTransactionOptions? options = null)
     {
         if (_transaction is not null) throw new InvalidOperationException("RunInTransaction Already called");
         if (_builder.QueryCount > 0) throw new InvalidOperationException("Query buffer not empty");
         _transaction = new(options);
         try
         {
-            await query(this);
-            if (_transaction.TransactionCanceled)
-            {
-                await _tunnel.Rollback();
-                Clear();
-            }
-            else if (_transaction.TransactionOpen)
-            {
-                await ExecuteInTransaction();
-                await _tunnel.Commit();
-            }
-            else
-            {
-                _builder.Prepend(_beginTran);
-                AddFinishTransaction();
-                await ExecuteInTransaction();
-            }
+            var result = await query(this);
+            if (_transaction.TransactionCanceled) await RollBack(_tunnel);
+            else if (_transaction.TransactionOpen) await Commit(_tunnel);
+            else await SendTransaction();
+            return result;
         }
         catch (Exception)
         {
@@ -224,6 +212,25 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
         {
             _transaction = null;
         }
+    }
+
+    private async Task SendTransaction()
+    {
+        _builder.Prepend(_beginTran);
+        AddFinishTransaction();
+        await ExecuteInTransaction();
+    }
+
+    private async Task Commit(ISqlProxyClientTunnel _tunnel)
+    {
+        await ExecuteInTransaction();
+        await _tunnel.Commit();
+    }
+
+    private async Task RollBack(ISqlProxyClientTunnel _tunnel)
+    {
+        await _tunnel.Rollback();
+        Clear();
     }
 
     private async Task ExecuteInTransaction(
