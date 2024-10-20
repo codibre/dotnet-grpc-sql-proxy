@@ -9,7 +9,7 @@ using static Dapper.SqlMapper;
 
 namespace Codibre.GrpcSqlProxy.Client.Impl;
 
-public class ScriptBuilder
+public sealed class ScriptBuilder : IDisposable
 {
     public int QueryCount { get; private set; }
     public int ParamLimit { get; } = 2100;
@@ -57,4 +57,6 @@ public class ScriptBuilder
         EnsureSemiColon();
         Add(current);
     }
+
+    public void Dispose() => _connection.Dispose();
 }

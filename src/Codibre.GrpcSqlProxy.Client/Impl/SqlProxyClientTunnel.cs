@@ -14,15 +14,10 @@ namespace Codibre.GrpcSqlProxy.Client.Impl;
 
 public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
 {
-    private readonly AsyncDuplexStreamingCall<SqlRequest, SqlResponse> _stream;
     private readonly SqlProxyClientOptions _clientOptions;
-    private readonly ConcurrentDictionary<string, ChannelWriter<SqlResponse>> _responseHooks = new();
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly AsyncDuplexStreamingCall<SqlRequest, SqlResponse> _stream;
+    private readonly SqlProxyClientResponseMonitor _monitor;
     private readonly string _connString;
-    private bool _running = true;
-    private bool _started = false;
-
-    public event ErrorHandlerEvent? ErrorHandler;
 
     public ISqlProxyBatchQuery Batch { get; }
 
@@ -32,54 +27,16 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
     )
     {
         Batch = new SqlProxyBatchQuery(this);
+        _monitor = new(stream);
         _stream = stream;
         _clientOptions = clientOptions;
         _connString = clientOptions.SqlConnectionString;
     }
 
-    private async void MonitorResponse()
-    {
-        if (_started) return;
-        _started = true;
-        try
-        {
-            while (_running && await _stream.ResponseStream.MoveNext(_cancellationTokenSource.Token))
-            {
-                var response = _stream.ResponseStream.Current;
-                if (response is not null && _responseHooks.TryGetValue(response.Id, out var hook))
-                {
-                    await hook.WriteAsync(response);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            if (
-                ex is not OperationCanceledException
-                && ErrorHandler is not null
-            ) ErrorHandler(this, ex);
-        }
-        finally
-        {
-            _cancellationTokenSource.Cancel();
-            _running = false;
-            _responseHooks.Clear();
-            try
-            {
-                await _stream.RequestStream.CompleteAsync();
-                _stream.Dispose();
-            }
-            catch (Exception)
-            {
-                // Ignoring errors due to already closed stream
-            }
-        }
-    }
-
     public IAsyncEnumerable<T> Query<T>(string sql, SqlProxyQueryOptions? options = null)
     where T : class, new()
     {
-        if (!_running) throw new InvalidOperationException("Tunnel closed");
+        if (!_monitor.Running) throw new InvalidOperationException("Tunnel closed");
         var type = typeof(T);
         var schema = type.GetCachedSchema();
 
@@ -118,12 +75,12 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
         var id = GuidEx.NewBase64Guid();
         var message = GetRequest(_clientOptions, sql, schemas, options, id);
         await _stream.RequestStream.WriteAsync(message);
-        MonitorResponse();
+        _monitor.Start();
         var channel = Channel.CreateUnbounded<SqlResponse>();
-        _responseHooks.TryAdd(id, channel.Writer);
+        _monitor.AddHook(id, channel.Writer);
         var reader = channel.Reader;
 
-        while (await reader.WaitToReadAsync(_cancellationTokenSource.Token))
+        while (await reader.WaitToReadAsync(_monitor.CancellationToken))
         {
             if (reader.TryRead(out var current))
             {
@@ -132,7 +89,7 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
                 if (current.Last == LastEnum.Last) break;
             }
         }
-        _responseHooks.TryRemove(id, out _);
+        _monitor.RemoveHook(id);
     }
 
     private SqlRequest GetRequest(SqlProxyClientOptions clientOptions, string sql, string[]? schemas, SqlProxyQueryOptions? options, string id)
@@ -140,7 +97,7 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
         SqlRequest message = new()
         {
             Id = id,
-            ConnString = _started ? "" : _connString,
+            ConnString = _monitor.Started ? "" : _connString,
             Query = sql,
             Schema = { },
             Compress = options?.Compress ?? clientOptions.Compress,
@@ -163,8 +120,8 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
 
     public void Dispose()
     {
-        _running = false;
-        _cancellationTokenSource.Cancel();
+        _monitor.Dispose();
+        _stream.Dispose();
     }
 
     public ValueTask BeginTransaction() => Execute("BEGIN TRANSACTION");
@@ -175,4 +132,7 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
 
     public Reader QueryMultipleAsync(string sql, string[] schemas, SqlProxyQueryOptions? options)
         => new(InternalRun(sql, schemas, options));
+
+    public void OnError(ErrorHandlerEvent handler)
+        => _monitor.ErrorHandler += handler;
 }
