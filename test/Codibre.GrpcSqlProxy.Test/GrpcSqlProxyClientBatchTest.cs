@@ -40,6 +40,41 @@ public class GrpcSqlProxyClientBatchTest
     }
 
     [Fact]
+    public async Task Should_Run_Transaction_In_One_RoundTrip()
+    {
+        // Arrange
+        var server = await TestServer.Get();
+        var client = new GrpcSqlProxyClient(
+            new SqlProxyClientOptions(
+                server.Url,
+                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
+            )
+            {
+                Compress = false
+            }
+        );
+
+        // Act
+        using var channel = client.CreateChannel();
+        await channel.Batch.RunInTransaction(() =>
+        {
+            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
+            channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES (12345)");
+        });
+        var resultHook = channel.Batch.QueryHook<TB_PEDIDO>($"SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 12345");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
+        await channel.Batch.RunQueries();
+        var result = resultHook.Result;
+
+        // Assert
+        result.Should().BeOfType<TB_PEDIDO[]>();
+        result.Should().BeEquivalentTo(new TB_PEDIDO[]
+        {
+            new () { CD_PEDIDO = 12345 }
+        });
+    }
+
+    [Fact]
     public async Task Should_Run_Query_Batch()
     {
         // Arrange
