@@ -180,4 +180,55 @@ public class GrpcSqlProxyClientBatchTest
             })
         ));
     }
+
+    [Fact]
+    public async Task Should_Run_PrepareBatchQuery_WithAsyncCallback()
+    {
+        // Arrange
+        var server = await TestServer.Get();
+        var client = new GrpcSqlProxyClient(
+            new SqlProxyClientOptions(
+                server.Url,
+                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
+            )
+            {
+                Compress = false
+            }
+        );
+
+        // Act
+        using var channel = client.CreateChannel();
+        List<(int, TB_PEDIDO)> list = [];
+        var pars = GetList().ToArray();
+        await channel.Batch.RunInTransaction(async () =>
+        {
+            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
+            foreach (var i in pars)
+            {
+                await channel.Batch.AddTransactionScript($"INSERT INTO TB_PEDIDO VALUES ({i})");
+            }
+            await channel.Batch.FlushTransaction();
+            await pars.PrepareQueryBatch(channel.Batch, (i, b) =>
+            {
+                return new ValueTask<IResultHook<TB_PEDIDO>>(b.QueryFirstHook<TB_PEDIDO>(@$"SELECT *
+                    FROM TB_PEDIDO
+                    WHERE CD_PEDIDO = {i}"));
+            })
+            .ForEachAwaitAsync(x =>
+            {
+                list.Add((x.Key, x.Value.Result));
+                return Task.CompletedTask;
+            });
+            channel.Batch.CancelTransaction();
+        });
+
+        // Assert
+        list.Count.Should().Be(pars.Length);
+        list.Should().BeEquivalentTo(pars.Select(
+            x => (x, new TB_PEDIDO
+            {
+                CD_PEDIDO = x
+            })
+        ));
+    }
 }

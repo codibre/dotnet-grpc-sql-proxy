@@ -21,7 +21,7 @@ public class TB_PESSOA
     public int CD_PESSOA { get; set; }
 }
 
-public class TestServer
+public class TestServer : IDisposable
 {
     private readonly WebApplication _app;
     private static Task _run;
@@ -51,5 +51,10 @@ public class TestServer
         _instance ??= new TestServer();
         await _run;
         return _instance;
+    }
+
+    public void Dispose()
+    {
+        _app.StopAsync().GetAwaiter().GetResult();
     }
 }
