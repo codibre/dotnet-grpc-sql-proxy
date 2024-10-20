@@ -1,3 +1,10 @@
+## [0.2.5](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.4...v0.2.5) (2024-10-20)
+
+
+### Bug Fixes
+
+* refactor monitor for better maintainabillity ([3bad475](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/3bad4752aa886e249622f02f1696101ab28a70b6))
+
 ## [0.2.4](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.3...v0.2.4) (2024-10-20)
 
 
