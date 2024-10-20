@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
+[Collection("Sequential")]
 public class GrpcSqlProxyClientTest
 {
     [Fact]
