@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.5...v0.3.0) (2024-10-21)
+
+
+### Features
+
+* Creating async local controlled Channel ([f19cdcb](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/f19cdcbaddb52d03f82bae6724716652fa8104a1))
+
 ## [0.2.5](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.4...v0.2.5) (2024-10-20)
 
 
