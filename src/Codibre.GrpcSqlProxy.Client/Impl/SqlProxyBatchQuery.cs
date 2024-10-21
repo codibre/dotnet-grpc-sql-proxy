@@ -195,6 +195,7 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
         if (_transaction is not null) throw new InvalidOperationException("RunInTransaction Already called");
         if (_builder.QueryCount > 0) throw new InvalidOperationException("Query buffer not empty");
         _transaction = new(options);
+        _tunnel.Start();
         try
         {
             var result = await query(this);
