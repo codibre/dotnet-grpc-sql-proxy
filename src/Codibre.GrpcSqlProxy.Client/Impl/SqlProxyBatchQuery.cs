@@ -204,10 +204,10 @@ internal sealed class SqlProxyBatchQuery(ISqlProxyClientTunnel _tunnel) : ISqlPr
             else await SendTransaction();
             return result;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             if (_transaction.TransactionOpen) await _tunnel.Rollback();
-            throw;
+            throw new SqlProxyException(ex);
         }
         finally
         {

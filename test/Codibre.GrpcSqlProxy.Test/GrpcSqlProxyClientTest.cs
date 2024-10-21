@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
-[Collection("Sequential")]
 public class GrpcSqlProxyClientTest
 {
     [Fact]
@@ -28,17 +27,17 @@ public class GrpcSqlProxyClientTest
 
         // Act
         using var channel = client.CreateChannel();
-        await channel.Execute("DELETE FROM TB_PEDIDO");
+        await channel.Execute("DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 600001");
         await channel.BeginTransaction();
-        await channel.Execute("INSERT INTO TB_PEDIDO (CD_PEDIDO) VALUES (1)");
-        var result1 = await channel.QueryFirstOrDefault<TB_PEDIDO>("SELECT * FROM TB_PEDIDO");
+        await channel.Execute("INSERT INTO TB_PEDIDO (CD_PEDIDO) VALUES (600001)");
+        var result1 = await channel.QueryFirstOrDefault<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 600001");
         await channel.Rollback();
-        var result2 = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO").ToArrayAsync();
+        var result2 = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 600001").ToArrayAsync();
 
         // Assert
         result1.Should().BeOfType<TB_PEDIDO>();
         result2.Should().BeOfType<TB_PEDIDO[]>();
-        result1.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 1 });
+        result1.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 600001 });
         result2.Should().BeEquivalentTo(Array.Empty<TB_PEDIDO>());
     }
 
@@ -57,17 +56,17 @@ public class GrpcSqlProxyClientTest
 
         // Act
         using var channel = client.CreateChannel();
-        await channel.Execute("DELETE FROM TB_PEDIDO");
+        await channel.Execute("DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 700001");
         await channel.BeginTransaction();
-        await channel.Execute("INSERT INTO TB_PEDIDO (CD_PEDIDO) VALUES (1)");
-        var result1 = await channel.QueryFirstOrDefault<TB_PEDIDO>("SELECT * FROM TB_PEDIDO");
+        await channel.Execute("INSERT INTO TB_PEDIDO (CD_PEDIDO) VALUES (700001)");
+        var result1 = await channel.QueryFirstOrDefault<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 700001");
         await channel.Rollback();
-        var result2 = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO").ToArrayAsync();
+        var result2 = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 700001").ToArrayAsync();
 
         // Assert
         result1.Should().BeOfType<TB_PEDIDO>();
         result2.Should().BeOfType<TB_PEDIDO[]>();
-        result1.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 1 });
+        result1.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 700001 });
         result2.Should().BeEquivalentTo(Array.Empty<TB_PEDIDO>());
     }
 
@@ -89,16 +88,16 @@ public class GrpcSqlProxyClientTest
         // Act
         using var channel = client.CreateChannel();
         await channel.BeginTransaction();
-        await channel.Execute("DELETE FROM TB_PRODUTO");
-        await channel.Execute("INSERT INTO TB_PRODUTO (CD_PRODUTO) VALUES (1)");
-        var result1 = await channel.QueryFirstOrDefault<TB_PRODUTO>("SELECT * FROM TB_PRODUTO");
+        await channel.Execute("DELETE FROM TB_PRODUTO WHERE CD_PRODUTO = 800001");
+        await channel.Execute("INSERT INTO TB_PRODUTO (CD_PRODUTO) VALUES (800001)");
+        var result1 = await channel.QueryFirstOrDefault<TB_PRODUTO>("SELECT * FROM TB_PRODUTO WHERE CD_PRODUTO = 800001");
         await channel.Rollback();
-        var result2 = await channel.Query<TB_PRODUTO>("SELECT * FROM TB_PRODUTO").ToArrayAsync();
+        var result2 = await channel.Query<TB_PRODUTO>("SELECT * FROM TB_PRODUTO WHERE CD_PRODUTO = 800001").ToArrayAsync();
 
         // Assert
         result1.Should().BeOfType<TB_PRODUTO>();
         result2.Should().BeOfType<TB_PRODUTO[]>();
-        result1.Should().BeEquivalentTo(new TB_PRODUTO { CD_PRODUTO = 1 });
+        result1.Should().BeEquivalentTo(new TB_PRODUTO { CD_PRODUTO = 800001 });
     }
 
     [Fact]
@@ -150,30 +149,30 @@ public class GrpcSqlProxyClientTest
         // Act
         using var channel1 = client.CreateChannel();
         using var channel2 = client.CreateChannel();
-        await channel1.Execute("DELETE FROM TB_PESSOA");
-        await channel1.Execute("INSERT INTO TB_PESSOA (CD_PESSOA) VALUES (1)");
-        await channel1.Execute("INSERT INTO TB_PESSOA (CD_PESSOA) VALUES (2)");
+        await channel1.Execute("DELETE FROM TB_PESSOA WHERE CD_PESSOA IN (100, 200, 300, 500)");
+        await channel1.Execute("INSERT INTO TB_PESSOA (CD_PESSOA) VALUES (100)");
+        await channel1.Execute("INSERT INTO TB_PESSOA (CD_PESSOA) VALUES (200)");
         await channel1.BeginTransaction();
         await channel2.BeginTransaction();
-        await channel1.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 3 WHERE CD_PESSOA = @Id", new()
+        await channel1.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 300 WHERE CD_PESSOA = @Id", new()
         {
             Params = new
             {
-                Id = 1
+                Id = 100
             }
         });
         var result1 = await channel1.QueryFirst<TB_PESSOA>("SELECT * FROM TB_PESSOA WHERE CD_PESSOA = @Id", new()
         {
             Params = new
             {
-                Id = 3
+                Id = 300
             }
         });
         await channel1.Rollback();
-        await channel2.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 5 WHERE CD_PESSOA = 2");
-        var result2 = await channel2.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA").ToArrayAsync();
+        await channel2.Execute("UPDATE TB_PESSOA SET CD_PESSOA = 500 WHERE CD_PESSOA = 200");
+        var result2 = await channel2.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA WHERE CD_PESSOA IN (100, 200, 300, 500)").ToArrayAsync();
         await channel2.Rollback();
-        var result3 = await channel1.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA", new()
+        var result3 = await channel1.Query<TB_PESSOA>("SELECT * FROM TB_PESSOA WHERE CD_PESSOA IN (100, 200, 300, 500)", new()
         {
             PacketSize = 1
         }).ToArrayAsync();
@@ -182,14 +181,14 @@ public class GrpcSqlProxyClientTest
         result1.Should().BeOfType<TB_PESSOA>();
         result2.Should().BeOfType<TB_PESSOA[]>();
         result3.Should().BeOfType<TB_PESSOA[]>();
-        result1.Should().BeEquivalentTo(new TB_PESSOA { CD_PESSOA = 3 });
+        result1.Should().BeEquivalentTo(new TB_PESSOA { CD_PESSOA = 300 });
         result2.OrderBy(x => x.CD_PESSOA).ToArray().Should().BeEquivalentTo(new TB_PESSOA[] {
-            new () { CD_PESSOA = 1 },
-            new () { CD_PESSOA = 5 }
+            new () { CD_PESSOA = 100 },
+            new () { CD_PESSOA = 500 }
         });
         result3.OrderBy(x => x.CD_PESSOA).ToArray().Should().BeEquivalentTo(new TB_PESSOA[] {
-            new () { CD_PESSOA = 1 },
-            new () { CD_PESSOA = 2 }
+            new () { CD_PESSOA = 100 },
+            new () { CD_PESSOA = 200 }
         });
     }
 }

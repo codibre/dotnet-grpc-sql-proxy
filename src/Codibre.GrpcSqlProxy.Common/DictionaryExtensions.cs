@@ -7,8 +7,14 @@ public static class DictionaryExtensions
     {
         if (!dictionary.TryGetValue(key, out var result))
         {
-            result = create();
-            dictionary[key] = result;
+            lock (dictionary)
+            {
+                if (!dictionary.TryGetValue(key, out result))
+                {
+                    result = create();
+                    dictionary[key] = result;
+                }
+            }
         }
 
         return result;

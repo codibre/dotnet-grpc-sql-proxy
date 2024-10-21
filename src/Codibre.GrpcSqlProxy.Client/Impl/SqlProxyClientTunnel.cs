@@ -13,7 +13,7 @@ using Grpc.Core;
 
 namespace Codibre.GrpcSqlProxy.Client.Impl;
 
-public sealed partial class SqlProxyClientTunnel : ISqlProxyClientTunnel
+public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
 {
     private readonly AsyncLocal<ContextInfo?> _context = new();
     private ContextInfo Context
@@ -120,7 +120,6 @@ public sealed partial class SqlProxyClientTunnel : ISqlProxyClientTunnel
             yield return current;
             if (current.Last == LastEnum.Last) break;
         }
-        context.Monitor.RemoveHook(id);
         ClearWhenNotInTransaction(context);
     }
 
