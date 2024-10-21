@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.3.0...v0.3.1) (2024-10-21)
+
+
+### Bug Fixes
+
+* bettering channel flow ([af41f90](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/af41f906dc674bbf064ac060e9da35cc60ca5e1d))
+
 # [0.3.0](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.2.5...v0.3.0) (2024-10-21)
 
 
