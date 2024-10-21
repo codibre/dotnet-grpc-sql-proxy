@@ -6,9 +6,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
-[Collection("Sequential")]
 public class GrpcSqlProxyClientBatchTest
 {
+    private IEnumerable<int> GetList()
+    {
+        for (var i = 0; i < 3000; i++) yield return i;
+    }
+
     [Fact]
     public async Task Should_Run_Transaction_In_Batch()
     {
@@ -28,11 +32,11 @@ public class GrpcSqlProxyClientBatchTest
         using var channel = client.CreateChannel();
         await channel.Batch.RunInTransaction(() =>
         {
-            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
-            channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES (12345)");
+            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 123456");
+            channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES (123456)");
             channel.Batch.CancelTransaction();
         });
-        var result = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 12345").ToArrayAsync();
+        var result = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 123456").ToArrayAsync();
 
         // Assert
         result.Should().BeOfType<TB_PEDIDO[]>();
@@ -58,11 +62,11 @@ public class GrpcSqlProxyClientBatchTest
         using var channel = client.CreateChannel();
         await channel.Batch.RunInTransaction(() =>
         {
-            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
+            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 12345");
             channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES (12345)");
         });
         var resultHook = channel.Batch.QueryHook<TB_PEDIDO>($"SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 12345");
-        channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 12345");
         await channel.Batch.RunQueries();
         var result = resultHook.Result;
 
@@ -92,16 +96,16 @@ public class GrpcSqlProxyClientBatchTest
         // Act
         using var channel = client.CreateChannel();
         channel.Batch.AddNoResultScript($"BEGIN TRANSACTION");
-        channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
-        channel.Batch.AddNoResultScript($"DELETE FROM TB_PRODUTO");
-        channel.Batch.AddNoResultScript($"DELETE FROM TB_PESSOA");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES ({1})");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PRODUTO VALUES ({2})");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({3})");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({4})");
-        var orderHook = channel.Batch.QueryFirstHook<TB_PEDIDO>($"SELECT TOP 1 * FROM TB_PEDIDO");
-        var personHook = channel.Batch.QueryHook<TB_PESSOA>($"SELECT * FROM TB_PESSOA");
-        var productHook = channel.Batch.QueryFirstOrDefaultHook<TB_PRODUTO>($"SELECT TOP 1 * FROM TB_PRODUTO");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 50001");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PRODUTO WHERE CD_PRODUTO = 50002");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PESSOA WHERE CD_PESSOA IN (50003, 50004)");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES ({50001})");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PRODUTO VALUES ({50002})");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({50003})");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({50004})");
+        var orderHook = channel.Batch.QueryFirstHook<TB_PEDIDO>($"SELECT TOP 1 * FROM TB_PEDIDO WHERE CD_PEDIDO = 50001");
+        var personHook = channel.Batch.QueryHook<TB_PESSOA>($"SELECT * FROM TB_PESSOA WHERE CD_PESSOA IN (50003, 50004)");
+        var productHook = channel.Batch.QueryFirstOrDefaultHook<TB_PRODUTO>($"SELECT TOP 1 * FROM TB_PRODUTO WHERE CD_PRODUTO = 50002");
         channel.Batch.AddNoResultScript($"ROLLBACK");
         await channel.Batch.RunQueries();
 
@@ -109,12 +113,12 @@ public class GrpcSqlProxyClientBatchTest
         orderHook.Result.Should().BeOfType<TB_PEDIDO>();
         personHook.Result.ToArray().Should().BeOfType<TB_PESSOA[]>();
         productHook.Result.Should().BeOfType<TB_PRODUTO>();
-        orderHook.Result.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 1 });
+        orderHook.Result.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 50001 });
         personHook.Result.Should().BeEquivalentTo([
-            new TB_PESSOA { CD_PESSOA = 3 },
-            new TB_PESSOA { CD_PESSOA = 4 }
+            new TB_PESSOA { CD_PESSOA = 50003 },
+            new TB_PESSOA { CD_PESSOA = 50004 }
         ]);
-        productHook.Result.Should().BeEquivalentTo(new TB_PRODUTO { CD_PRODUTO = 2 });
+        productHook.Result.Should().BeEquivalentTo(new TB_PRODUTO { CD_PRODUTO = 50002 });
     }
 
     [Fact]
@@ -135,16 +139,16 @@ public class GrpcSqlProxyClientBatchTest
         // Act
         using var channel = client.CreateChannel();
         channel.Batch.AddNoResultScript($"BEGIN TRANSACTION");
-        channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
-        channel.Batch.AddNoResultScript($"DELETE FROM TB_PRODUTO");
-        channel.Batch.AddNoResultScript($"DELETE FROM TB_PESSOA");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES ({1})");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PRODUTO VALUES ({2})");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({3})");
-        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({4})");
-        var orderHook = channel.Batch.QueryFirstHook<TB_PEDIDO>($"SELECT TOP 1 * FROM TB_PEDIDO");
-        var personHook = channel.Batch.QueryHook<TB_PESSOA>($"SELECT * FROM TB_PESSOA");
-        var productHook = channel.Batch.QueryFirstOrDefaultHook<TB_PRODUTO>($"SELECT TOP 1 * FROM TB_PRODUTO");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 40001");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PRODUTO WHERE CD_PRODUTO = 40002");
+        channel.Batch.AddNoResultScript($"DELETE FROM TB_PESSOA WHERE CD_PESSOA IN (40003, 40004)");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PEDIDO VALUES ({40001})");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PRODUTO VALUES ({40002})");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({40003})");
+        channel.Batch.AddNoResultScript($"INSERT INTO TB_PESSOA VALUES ({40004})");
+        var orderHook = channel.Batch.QueryFirstHook<TB_PEDIDO>($"SELECT TOP 1 * FROM TB_PEDIDO WHERE CD_PEDIDO = 40001");
+        var personHook = channel.Batch.QueryHook<TB_PESSOA>($"SELECT * FROM TB_PESSOA WHERE CD_PESSOA IN (40003, 40004)");
+        var productHook = channel.Batch.QueryFirstOrDefaultHook<TB_PRODUTO>($"SELECT TOP 1 * FROM TB_PRODUTO WHERE CD_PRODUTO = 40002");
         channel.Batch.AddNoResultScript($"ROLLBACK");
         await channel.Batch.RunQueries(new()
         {
@@ -156,17 +160,12 @@ public class GrpcSqlProxyClientBatchTest
         orderHook.Result.Should().BeOfType<TB_PEDIDO>();
         personHook.Result.ToArray().Should().BeOfType<TB_PESSOA[]>();
         productHook.Result.Should().BeOfType<TB_PRODUTO>();
-        orderHook.Result.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 1 });
+        orderHook.Result.Should().BeEquivalentTo(new TB_PEDIDO { CD_PEDIDO = 40001 });
         personHook.Result.Should().BeEquivalentTo([
-            new TB_PESSOA { CD_PESSOA = 3 },
-            new TB_PESSOA { CD_PESSOA = 4 }
+            new TB_PESSOA { CD_PESSOA = 40003 },
+            new TB_PESSOA { CD_PESSOA = 40004 }
         ]);
-        productHook.Result.Should().BeEquivalentTo(new TB_PRODUTO { CD_PRODUTO = 2 });
-    }
-
-    private IEnumerable<int> GetList()
-    {
-        for (var i = 0; i < 3000; i++) yield return i;
+        productHook.Result.Should().BeEquivalentTo(new TB_PRODUTO { CD_PRODUTO = 40002 });
     }
 
     [Fact]
@@ -187,10 +186,10 @@ public class GrpcSqlProxyClientBatchTest
         // Act
         using var channel = client.CreateChannel();
         List<(int, TB_PEDIDO)> list = [];
-        var pars = GetList().ToArray();
+        var pars = GetList().Select(x => x * 10000).ToArray();
         await channel.Batch.RunInTransaction(async () =>
         {
-            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
+            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO WHERE CD_PEDIDO >= {pars.Min()} AND CD_PEDIDO <= {pars.Max()}");
             foreach (var i in pars)
             {
                 await channel.Batch.AddTransactionScript($"INSERT INTO TB_PEDIDO VALUES ({i})");
@@ -234,10 +233,10 @@ public class GrpcSqlProxyClientBatchTest
         // Act
         using var channel = client.CreateChannel();
         List<(int, TB_PEDIDO)> list = [];
-        var pars = GetList().ToArray();
+        var pars = GetList().Select(x => x * 1000).ToArray();
         await channel.Batch.RunInTransaction(async () =>
         {
-            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO");
+            channel.Batch.AddNoResultScript($"DELETE FROM TB_PEDIDO WHERE CD_PEDIDO >= {pars.Min()} AND CD_PEDIDO <= {pars.Max()}");
             foreach (var i in pars)
             {
                 await channel.Batch.AddTransactionScript($"INSERT INTO TB_PEDIDO VALUES ({i})");
