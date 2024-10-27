@@ -14,6 +14,16 @@ public static class SqlResponseEx
         Index = packet.Index,
     };
 
+    public static SqlResponse CreateEmpty(string id) => new()
+    {
+        Id = id,
+        Result = ByteString.Empty,
+        Error = "",
+        Last = LastEnum.Last,
+        Compressed = false,
+        Index = 0,
+    };
+
     public static SqlResponse CreateError(string id, string error, int index) => new()
     {
         Id = id,

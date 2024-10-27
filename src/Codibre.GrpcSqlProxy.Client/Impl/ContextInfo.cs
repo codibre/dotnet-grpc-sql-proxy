@@ -25,7 +25,6 @@ internal class ContextInfo : IDisposable
     public void Dispose()
     {
         Monitor.Dispose();
-        Stream.Dispose();
         Disposed = true;
         if (_executionContext is not null) ExecutionContext.Run(_executionContext, (_) => _clear(), null);
     }

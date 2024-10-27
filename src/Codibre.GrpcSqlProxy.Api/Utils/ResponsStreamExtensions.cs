@@ -8,21 +8,29 @@ namespace Codibre.GrpcSqlProxy.Api.Utils;
 public static class ResponseStreamExtensions
 {
 
+    public static async Task WriteEmpty(this IServerStreamWriter<SqlResponse> responseStream, string id)
+    {
+        using var semaphore = await AsyncLock.Lock(responseStream);
+        await responseStream.WriteAsync(SqlResponseEx.CreateEmpty(id));
+    }
+
     public static async Task WriteSqlResponse(this IServerStreamWriter<SqlResponse> responseStream, SqlResponse response)
     {
         using var semaphore = await AsyncLock.Lock(responseStream);
         await responseStream.WriteAsync(response);
     }
 
-    internal static async Task Catch(this IServerStreamWriter<SqlResponse> responseStream, string id, Func<Task> callback, ProxyContext? context)
+    internal static async Task<bool> Catch(this IServerStreamWriter<SqlResponse> responseStream, string id, Func<Task> callback, ProxyContext? context)
     {
         try
         {
             await callback();
+            return true;
         }
         catch (Exception ex)
         {
             responseStream.WriteError(id, ex.Message, context?.Index ?? 0);
+            return false;
         }
     }
 

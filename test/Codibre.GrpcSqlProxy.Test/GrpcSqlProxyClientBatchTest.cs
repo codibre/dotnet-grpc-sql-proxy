@@ -3,10 +3,12 @@ using Codibre.GrpcSqlProxy.Client;
 using Codibre.GrpcSqlProxy.Client.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Xunit.Abstractions;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
-public class GrpcSqlProxyClientBatchTest
+[Collection("TestServerCollection")]
+public class GrpcSqlProxyClientBatchTest(ITestOutputHelper _testOutputHelper, TestServer _testServer)
 {
     private IEnumerable<int> GetList()
     {
@@ -17,16 +19,7 @@ public class GrpcSqlProxyClientBatchTest
     public async Task Should_Run_Transaction_In_Batch()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel = client.CreateChannel();
@@ -47,16 +40,7 @@ public class GrpcSqlProxyClientBatchTest
     public async Task Should_Run_Transaction_In_One_RoundTrip()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel = client.CreateChannel();
@@ -82,16 +66,7 @@ public class GrpcSqlProxyClientBatchTest
     public async Task Should_Run_Query_Batch()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel = client.CreateChannel();
@@ -125,16 +100,7 @@ public class GrpcSqlProxyClientBatchTest
     public async Task Should_Run_Query_Batch_Using_CustomOptions()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel = client.CreateChannel();
@@ -172,16 +138,7 @@ public class GrpcSqlProxyClientBatchTest
     public async Task Should_Deal_With_Parameter_Limitation()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel = client.CreateChannel();
@@ -219,16 +176,7 @@ public class GrpcSqlProxyClientBatchTest
     public async Task Should_Run_PrepareBatchQuery_WithAsyncCallback()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel = client.CreateChannel();

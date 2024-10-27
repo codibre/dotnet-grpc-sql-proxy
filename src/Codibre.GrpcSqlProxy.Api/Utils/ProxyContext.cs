@@ -7,7 +7,7 @@ using static Dapper.SqlMapper;
 
 namespace Codibre.GrpcSqlProxy.Api.Utils;
 
-internal sealed class ProxyContext(string _connectionString) : IAsyncDisposable
+internal sealed class ProxyContext(string _connectionString) : IAsyncDisposable, IDisposable
 {
     public string ConnectionString { get; set; } = _connectionString;
     private readonly SqlConnection _connection = new(_connectionString);
@@ -79,6 +79,8 @@ internal sealed class ProxyContext(string _connectionString) : IAsyncDisposable
                 // Ignore if error occurs as no transaction were there
             }
         }
-        if (_connection is not null) await _connection.CloseAsync();
+        if (_connection.State != System.Data.ConnectionState.Closed) await _connection.CloseAsync();
     }
+
+    public void Dispose() => _ = DisposeAsync();
 }

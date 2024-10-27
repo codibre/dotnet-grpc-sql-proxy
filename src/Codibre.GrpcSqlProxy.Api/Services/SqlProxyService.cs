@@ -23,6 +23,11 @@ public class SqlProxyService : SqlProxyBase
             while (await requestStream.MoveNext())
             {
                 var request = requestStream.Current;
+                if (request.Query == "NOOP")
+                {
+                    await responseStream.WriteEmpty(request.Id);
+                    continue;
+                }
                 await responseStream.Catch(request.Id, async () =>
                 {
                     var connString = request.ConnString;
@@ -30,8 +35,12 @@ public class SqlProxyService : SqlProxyBase
                     proxyContext ??= await ProxyContext.GetConnection(responseStream, request);
                     if (proxyContext is not null)
                     {
-                        if (request.PacketSize <= 0) request.PacketSize = 1000;
-                        responseStream.PipeResponse(request, proxyContext);
+                        if (request.Query == "CONNECT") await responseStream.WriteEmpty(request.Id);
+                        else
+                        {
+                            if (request.PacketSize <= 0) request.PacketSize = 1000;
+                            responseStream.PipeResponse(request, proxyContext);
+                        }
                     }
                 }, proxyContext);
             }
