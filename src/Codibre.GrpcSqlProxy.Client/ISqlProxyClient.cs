@@ -4,4 +4,5 @@ public interface ISqlProxyClient
 {
     ISqlProxyClientTunnel Channel { get; }
     ISqlProxyClientTunnel CreateChannel();
+    ValueTask Initialize();
 }

@@ -1,38 +1,54 @@
-﻿using Codibre.GrpcSqlProxy.Api;
+﻿using System.Diagnostics;
+using Codibre.GrpcSqlProxy.Api;
 using Codibre.GrpcSqlProxy.Client;
 using Codibre.GrpcSqlProxy.Client.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Xunit.Abstractions;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
-public class GrpcSqlProxyClientTest
+[Collection("TestServerCollection")]
+public class GrpcSqlProxyClientTest(ITestOutputHelper _testOutputHelper, TestServer _testServer)
 {
     [Fact]
     public async Task Should_Keep_Transaction_Opened()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
+        await Task.WhenAll(
+            RunTest(client),
+            RunTest(client),
+            RunTest(client)
+        );
+    }
+
+    private async Task RunTest(GrpcSqlProxyClient client)
+    {
+        var watch = Stopwatch.StartNew();
+        _testOutputHelper.WriteLine($"First {watch.Elapsed}");
         using var channel = client.CreateChannel();
+        _testOutputHelper.WriteLine($"Create {watch.Elapsed}");
+        await channel.Noop();
+        _testOutputHelper.WriteLine($"Noop {watch.Elapsed}");
+        await channel.Connect();
+        _testOutputHelper.WriteLine($"Connect {watch.Elapsed}");
         await channel.Execute("DELETE FROM TB_PEDIDO WHERE CD_PEDIDO = 600001");
+        _testOutputHelper.WriteLine(watch.Elapsed.ToString());
         await channel.BeginTransaction();
+        _testOutputHelper.WriteLine(watch.Elapsed.ToString());
         await channel.Execute("INSERT INTO TB_PEDIDO (CD_PEDIDO) VALUES (600001)");
+        _testOutputHelper.WriteLine(watch.Elapsed.ToString());
         var result1 = await channel.QueryFirstOrDefault<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 600001");
+        _testOutputHelper.WriteLine(watch.Elapsed.ToString());
         await channel.Rollback();
+        _testOutputHelper.WriteLine(watch.Elapsed.ToString());
         var result2 = await channel.Query<TB_PEDIDO>("SELECT * FROM TB_PEDIDO WHERE CD_PEDIDO = 600001").ToArrayAsync();
+        _testOutputHelper.WriteLine(watch.Elapsed.ToString());
 
         // Assert
         result1.Should().BeOfType<TB_PEDIDO>();
@@ -45,9 +61,9 @@ public class GrpcSqlProxyClientTest
     public async Task Should_Inject_SqlProxy_Properly()
     {
         // Arrange
-        var server = await TestServer.Get();
+        await _testServer.GetClient(_testOutputHelper);
         var builder = Host.CreateApplicationBuilder([]);
-        builder.Configuration.GetSection("GrpcSqlProxy").GetSection("Url").Value = server.Url;
+        builder.Configuration.GetSection("GrpcSqlProxy").GetSection("Url").Value = _testServer.Url;
         builder.Configuration.GetSection("GrpcSqlProxy").GetSection("Compress").Value = "False";
         builder.Configuration.GetSection("GrpcSqlProxy").GetSection("PacketSize").Value = "2000";
         builder.Services.AddGrpcSqlProxy();
@@ -74,16 +90,7 @@ public class GrpcSqlProxyClientTest
     public async Task Should_Use_Compression()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = true
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel = client.CreateChannel();
@@ -104,16 +111,7 @@ public class GrpcSqlProxyClientTest
     public async Task Should_Throw_Error_For_Invalid_Queries()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
         Exception? thrownException = null;
 
         // Act
@@ -135,16 +133,7 @@ public class GrpcSqlProxyClientTest
     public async Task Should_Keep_Parallel_Transaction_Opened()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
 
         // Act
         using var channel1 = client.CreateChannel();

@@ -4,64 +4,69 @@ using Codibre.GrpcSqlProxy.Client;
 using Codibre.GrpcSqlProxy.Client.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Client;
+using Xunit.Abstractions;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
-public class TB_PRODUTO
+public sealed class TestServer : IDisposable
 {
-    public int CD_PRODUTO { get; set; }
-}
-public class TB_PEDIDO
-{
-    public int CD_PEDIDO { get; set; }
-}
+    private WebApplication? _app = null;
+    private Task? _start = null;
+    private ValueTask? _noop = null;
+    private GrpcSqlProxyClient? _client = null;
 
-public class TB_PESSOA
-{
-    public int CD_PESSOA { get; set; }
-}
+    private string? _port;
 
-public class TestServer
-{
-    private readonly WebApplication _app;
-    private static Task? _run = null;
-    private static TestServer? _instance = null;
+    private string GetPort()
+    {
+        _port = RandomNumberGenerator.GetInt32(3000, 4000).ToString();
+        return _port;
+    }
 
-    private static readonly string _port = RandomNumberGenerator.GetInt32(3000, 4000).ToString();
-    public string Url { get; } = $"http://localhost:{_port}";
+    public string Url => $"http://localhost:{_port}";
     public IConfigurationRoot Config { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", true)
             .AddEnvironmentVariables()
             .Build();
 
-    private TestServer()
+    public async Task<GrpcSqlProxyClient> GetClient(ITestOutputHelper _testOutputHelper)
     {
-        _app = Program.GetApp([_port]);
-        _run ??= StartApp(_app);
-    }
-
-    private async Task StartApp(WebApplication app)
-    {
-        _ = Task.Run(async () =>
+        if (_app is null || _start is null)
         {
-            try
-            {
-                await app.RunAsync();
-            }
-            catch
-            {
-                // Ignore
-            }
-        });
-        await Task.Delay(1000);
+            _start = StartRun(_testOutputHelper);
+        }
+        await _start;
+        if (_client is null || _noop is null)
+        {
+            _client = new GrpcSqlProxyClient(
+                            new SqlProxyClientOptions(
+                                Url,
+                                Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
+                            )
+                            {
+                                Compress = false
+                            }
+                        );
+            _noop = _client.Initialize();
+        }
+        await _noop.Value;
+        return _client;
     }
 
-    public static async Task<TestServer> Get()
+    private async Task StartRun(ITestOutputHelper logger)
     {
-        _instance ??= new TestServer();
-        if (_run is not null) await _run;
-        return _instance;
+        logger.WriteLine("Starting server");
+        _app = Program.GetApp([GetPort()]);
+        await _app.StartAsync();
+        logger.WriteLine("Server started");
+    }
+
+    public void Dispose()
+    {
+        _client?.Channel.Dispose();
+        _app?.StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }

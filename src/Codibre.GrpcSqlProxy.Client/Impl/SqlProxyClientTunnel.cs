@@ -31,6 +31,8 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
 
     public ISqlProxyBatchQuery Batch { get; }
 
+    public bool Disposed { get; private set; } = false;
+
     internal SqlProxyClientTunnel(
         Func<AsyncDuplexStreamingCall<SqlRequest, SqlResponse>> getStream,
         SqlProxyClientOptions clientOptions
@@ -171,6 +173,7 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
     {
         _context.Value?.Dispose();
         _context.Value = null;
+        Disposed = true;
     }
 
     public ValueTask BeginTransaction()
@@ -201,4 +204,7 @@ public sealed class SqlProxyClientTunnel : ISqlProxyClientTunnel
     }
 
     public void Start() => _ = Context;
+
+    public ValueTask Noop() => Execute("NOOP");
+    public ValueTask Connect() => Execute("CONNECT");
 }

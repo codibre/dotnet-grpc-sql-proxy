@@ -3,25 +3,18 @@ using Codibre.GrpcSqlProxy.Client;
 using Codibre.GrpcSqlProxy.Client.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Xunit.Abstractions;
 
 namespace Codibre.GrpcSqlProxy.Test;
 
-public class GrpcSqlProxyClientErrorTest
+[Collection("TestServerCollection")]
+public class GrpcSqlProxyClientErrorTest(ITestOutputHelper _testOutputHelper, TestServer _testServer)
 {
     [Fact]
     public async Task Should_Throw_An_Error_For_InvalidTable()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
         Exception? thrownError = null;
 
         // Act
@@ -43,16 +36,7 @@ public class GrpcSqlProxyClientErrorTest
     public async Task Should_Throw_An_Error_For_InvalidSyntax()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
         Exception? thrownError = null;
 
         // Act
@@ -73,16 +57,7 @@ public class GrpcSqlProxyClientErrorTest
     public async Task Should_Throw_An_Error_For_InvalidTable_OnBatch()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
         Exception? thrownError = null;
 
         // Act
@@ -105,16 +80,7 @@ public class GrpcSqlProxyClientErrorTest
     public async Task Should_Throw_An_Error_For_InvalidSyntax_OnBatch()
     {
         // Arrange
-        var server = await TestServer.Get();
-        var client = new GrpcSqlProxyClient(
-            new SqlProxyClientOptions(
-                server.Url,
-                server.Config.GetConnectionString("SqlConnection") ?? throw new Exception("No connection string")
-            )
-            {
-                Compress = false
-            }
-        );
+        var client = await _testServer.GetClient(_testOutputHelper);
         Exception? thrownError = null;
 
         // Act

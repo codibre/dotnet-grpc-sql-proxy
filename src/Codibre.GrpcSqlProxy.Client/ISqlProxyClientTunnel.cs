@@ -5,7 +5,10 @@ namespace Codibre.GrpcSqlProxy.Client;
 public interface ISqlProxyClientTunnel : IDisposable
 {
     ISqlProxyBatchQuery Batch { get; }
+    bool Disposed { get; }
     void Start();
+    ValueTask Noop();
+    ValueTask Connect();
     ValueTask BeginTransaction();
     ValueTask Commit();
     ValueTask Rollback();

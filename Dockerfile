@@ -12,4 +12,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app ./
 
+EXPOSE 3000
+
 ENTRYPOINT ["dotnet", "Codibre.GrpcSqlProxy.Api.dll"]

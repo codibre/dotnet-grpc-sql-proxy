@@ -13,12 +13,15 @@
     "test": "dotnet test",
     "prepare-test-db": "cd devops && sh prepare-db.sh && cd ..",
     "unload-test-db": "cd devops && docker compose down && cd ..",
+    "docker:build": "docker build . -t test-grpc-client",
+    "docker:run": "docker run -d --network=host test-grpc-client",
     "test:coverage": "dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/lcov.info"
   },
   "devDependencies": {
     "@types/lint-staged": "^13.3.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.10"
+    "lint-staged": "^15.2.10",
+    "run-container": "^2.0.12"
   },
   "lint-staged": {
     "*.cs": "dotnet format --include"
