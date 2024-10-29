@@ -1,3 +1,10 @@
+## [0.3.2](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.3.1...v0.3.2) (2024-10-29)
+
+
+### Bug Fixes
+
+* preparing tests using docker ([dc2a12e](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/dc2a12ea5720f5ae29c3f218d433a03235b13337))
+
 ## [0.3.1](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.3.0...v0.3.1) (2024-10-21)
 
 
