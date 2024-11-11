@@ -1,3 +1,15 @@
+# [0.4.0](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.3.2...v0.4.0) (2024-11-11)
+
+
+### Bug Fixes
+
+* fix readme ([690d724](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/690d724e51417a812bf51539fab3184bc22eac0b))
+
+
+### Features
+
+* multitargeting for better performance ([1d49952](https://github.com/codibre/dotnet-grpc-sql-proxy/commit/1d4995219c36e936889d07a6a06e60f43e1242f6))
+
 ## [0.3.2](https://github.com/codibre/dotnet-grpc-sql-proxy/compare/v0.3.1...v0.3.2) (2024-10-29)
 
 
